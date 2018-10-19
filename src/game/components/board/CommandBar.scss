@@ -3,9 +3,8 @@
 .tic-tac-toe-tee {
   .board-container {
     .action-bar {
-      background-color: red;
       display: flex;
-      justify-items: center;
+      justify-content: center;
 
       .button {
         @include button-default-style;
