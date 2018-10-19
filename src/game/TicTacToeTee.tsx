@@ -1,6 +1,6 @@
 import * as React from "react";
+import Board from "./components/board/Board";
 import Header from "./components/Header";
-import Nav from "./components/Nav";
 import PlayerDisplay from "./components/player/PlayerDisplay";
 import PlayerEditor from "./components/player/PlayerEditor";
 import { IPlayer, WhichPlayer } from "./sharedInterfaces";
@@ -30,26 +30,11 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
   } as IGameState;
 
   public render() {
-    let chooser = null;
-    if (this.state.playerBeingEdited !== WhichPlayer.None) {
-      chooser = (
-        <PlayerEditor
-          player={
-            this.state.playerBeingEdited === WhichPlayer.One
-              ? this.state.player1
-              : this.state.player2
-          }
-          // tslint:disable-next-line:jsx-no-lambda
-          onAccepted={(player: IPlayer) => this.onFinishedEditingPlayer(player)}
-          // tslint:disable-next-line:jsx-no-lambda
-          onCancelled={() => this.onCancelledEditingPlayer()}
-        />
-      );
-    }
     return (
       <React.Fragment>
         <div className="tic-tac-toe-tee game">
           <Header />
+
           <div className="body-container">
             <PlayerDisplay
               name={this.state.player1 ? this.state.player1.name : undefined}
@@ -61,6 +46,20 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
               // tslint:disable-next-line:jsx-no-lambda
               onChoosePlayer={() => this.onBeginChoosePlayer1()}
             />
+
+            <Board
+              {...this.state}
+              isReadyToBegin={
+                !this.state.isPlaying &&
+                !!this.state.player1 &&
+                !!this.state.player2
+              }
+              // tslint:disable-next-line:jsx-no-lambda
+              onPlay={() => this.onStartGame()}
+              // tslint:disable-next-line:jsx-no-lambda
+              onReset={() => this.onResetGame()}
+            />
+
             <PlayerDisplay
               name={this.state.player2 ? this.state.player2.name : undefined}
               avatarUrl={
@@ -72,18 +71,22 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
               onChoosePlayer={() => this.onBeginChoosePlayer2()}
             />
           </div>
-          <Nav
-            {...this.state}
-            // tslint:disable-next-line:jsx-no-lambda
-            onChoosePlayer1={() => this.onBeginChoosePlayer1()}
-            // tslint:disable-next-line:jsx-no-lambda
-            onChoosePlayer2={() => this.onBeginChoosePlayer2()}
-            // tslint:disable-next-line:jsx-no-lambda
-            onPlay={() => this.onStartGame()}
-            // tslint:disable-next-line:jsx-no-lambda
-            onReset={() => this.onResetGame()}
-          />
-          {chooser}
+
+          {this.state.playerBeingEdited === WhichPlayer.None ? null : (
+            <PlayerEditor
+              player={
+                this.state.playerBeingEdited === WhichPlayer.One
+                  ? this.state.player1
+                  : this.state.player2
+              }
+              // tslint:disable-next-line:jsx-no-lambda
+              onAccepted={(player: IPlayer) =>
+                this.onFinishedEditingPlayer(player)
+              }
+              // tslint:disable-next-line:jsx-no-lambda
+              onCancelled={() => this.onCancelledEditingPlayer()}
+            />
+          )}
         </div>
       </React.Fragment>
     );
@@ -108,6 +111,7 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
       };
     });
   }
+
   private onCancelledEditingPlayer() {
     this.setState({
       playerBeingEdited: WhichPlayer.None
@@ -115,12 +119,10 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
   }
 
   private onStartGame() {
-    const a = 3;
-    return a + 1;
+    this.setState({ isPlaying: true });
   }
   private onResetGame() {
-    const a = 3;
-    return a + 1;
+    this.setState({ isPlaying: false });
   }
 }
 

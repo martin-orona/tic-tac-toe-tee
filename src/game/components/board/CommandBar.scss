@@ -1,10 +1,10 @@
-@import "../style-mixins.scss";
+@import "../../style-mixins.scss";
 
 .tic-tac-toe-tee {
-  .nav {
+  .action-bar {
     background-color: red;
 
-    button {
+    .button {
       @include button-default-style;
     }
   }
