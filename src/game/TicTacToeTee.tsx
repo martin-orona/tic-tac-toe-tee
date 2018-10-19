@@ -1,10 +1,13 @@
 import * as React from "react";
 import Header from "./components/Header";
 import Nav from "./components/Nav";
+import PlayerDisplay from "./components/player/PlayerDisplay";
 import PlayerEditor from "./components/player/PlayerEditor";
 import { IPlayer, WhichPlayer } from "./sharedInterfaces";
 
 import "./TicTacToeTee.css";
+
+import DefaultAvatar from "./images/avatar01.png";
 
 export interface IGameProps {
   player1?: IPlayer;
@@ -47,6 +50,28 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
       <React.Fragment>
         <div className="tic-tac-toe-tee game">
           <Header />
+          <div className="body-container">
+            <PlayerDisplay
+              name={this.state.player1 ? this.state.player1.name : undefined}
+              avatarUrl={
+                this.state.player1
+                  ? this.state.player1.avatarUrl
+                  : DefaultAvatar
+              }
+              // tslint:disable-next-line:jsx-no-lambda
+              onChoosePlayer={() => this.onBeginChoosePlayer1()}
+            />
+            <PlayerDisplay
+              name={this.state.player2 ? this.state.player2.name : undefined}
+              avatarUrl={
+                this.state.player2
+                  ? this.state.player2.avatarUrl
+                  : DefaultAvatar
+              }
+              // tslint:disable-next-line:jsx-no-lambda
+              onChoosePlayer={() => this.onBeginChoosePlayer2()}
+            />
+          </div>
           <Nav
             {...this.state}
             // tslint:disable-next-line:jsx-no-lambda

@@ -1,0 +1,23 @@
+@import "../../style-mixins.scss";
+
+.tic-tac-toe-tee {
+  .player-display {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 1em;
+
+    .button {
+      @include button-default-style;
+    }
+
+    .avatar {
+      @include avatar-image;
+    }
+
+    .name {
+      font-weight: bold;
+    }
+  }
+}

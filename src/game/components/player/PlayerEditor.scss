@@ -23,13 +23,7 @@
 
     .avatars {
       > img {
-        height: 7em;
-        width: 7em;
-        margin: 0.5em;
-
-        border-radius: 6px;
-        box-shadow: 0 0 8px rgba(81, 203, 238, 0);
-        border: 2px solid rgba(81, 203, 238, 0);
+        @include avatar-image;
 
         &.selected {
           border-radius: 6px;
@@ -42,8 +36,7 @@
     .action-bar {
       @include floater-container;
 
-      button,
-      input[type="submit"] {
+      .button {
         @include button-default-style;
 
         &:not(:first-child) {

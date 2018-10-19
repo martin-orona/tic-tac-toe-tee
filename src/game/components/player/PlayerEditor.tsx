@@ -1,5 +1,6 @@
 import * as React from "react";
 import { IPlayer } from "../../sharedInterfaces";
+import * as PlayerUtilities from "./PlayerUtilities";
 
 import "./PlayerEditor.css";
 
@@ -78,12 +79,7 @@ class PlayerEditor extends React.Component<IPlayerEditorProps, IPlayer> {
                   <img
                     key={index}
                     src={url}
-                    title={(url.split("/").pop() as string)
-                      .replace(/(\w+?)(\d+).*/g, "$1 $2")
-                      .replace(
-                        /.+/g,
-                        word => word.charAt(0).toUpperCase() + word.slice(1)
-                      )}
+                    title={PlayerUtilities.getAvatarTitle(url)}
                     className={url === this.state.avatarUrl ? "selected" : ""}
                     // tslint:disable-next-line:jsx-no-lambda
                     onClick={event => this.onAvatarChange(event)}
@@ -94,8 +90,12 @@ class PlayerEditor extends React.Component<IPlayerEditorProps, IPlayer> {
           </div>
 
           <div className="action-bar">
-            <input type="submit" className="primary accept" value="Accept" />
-            <button className="cancel" onClick={this.props.onCancelled}>
+            <input
+              type="submit"
+              className="button primary accept"
+              value="Accept"
+            />
+            <button className="button cancel" onClick={this.props.onCancelled}>
               Cancel
             </button>
           </div>
