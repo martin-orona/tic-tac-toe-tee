@@ -1,7 +1,7 @@
 import * as React from "react";
 import Header from "./components/Header";
 import Nav from "./components/Nav";
-import PlayerDetails from "./components/PlayerDetails";
+import PlayerEditor from "./components/PlayerEditor";
 import { IPlayer, WhichPlayer } from "./sharedInterfaces";
 
 import "./TicTacToeTee.css";
@@ -30,7 +30,7 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
     let chooser = null;
     if (this.state.playerBeingEdited !== WhichPlayer.None) {
       chooser = (
-        <PlayerDetails
+        <PlayerEditor
           player={
             this.state.playerBeingEdited === WhichPlayer.One
               ? this.state.player1

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { IPlayer } from "../sharedInterfaces";
 
-import "./PlayerDetails.css";
+import "./PlayerEditor.css";
 
 import Avatar01 from "../images/avatar01.png";
 import Avatar02 from "../images/avatar02.png";
@@ -35,13 +35,13 @@ const avatars: string[] = [
   Avatar14
 ];
 
-export interface IPlayerDetailsProps {
+export interface IPlayerEditorProps {
   player?: IPlayer;
   onAccepted: (player: IPlayer) => void;
   onCancelled: () => void;
 }
 
-class PlayerDetails extends React.Component<IPlayerDetailsProps, IPlayer> {
+class PlayerEditor extends React.Component<IPlayerEditorProps, IPlayer> {
   public state = {
     avatarUrl: this.props.player ? this.props.player.avatarUrl : Avatar01,
     name: this.props.player ? this.props.player.name : ""
@@ -121,4 +121,4 @@ class PlayerDetails extends React.Component<IPlayerDetailsProps, IPlayer> {
   }
 }
 
-export default PlayerDetails;
+export default PlayerEditor;
