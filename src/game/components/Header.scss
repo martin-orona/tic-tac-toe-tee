@@ -1,0 +1,9 @@
+@import "../style-mixins.scss";
+
+.tic-tac-toe-tee {
+  .header {
+    font-size: 3em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+  }
+}

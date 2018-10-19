@@ -1,4 +1,5 @@
 import * as React from "react";
+import Header from "./components/Header";
 import Nav from "./components/Nav";
 import PlayerDetails from "./components/PlayerDetails";
 import { IPlayer, WhichPlayer } from "./sharedInterfaces";
@@ -45,6 +46,7 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
     return (
       <React.Fragment>
         <div className="tic-tac-toe-tee game">
+          <Header />
           <Nav
             {...this.state}
             // tslint:disable-next-line:jsx-no-lambda
