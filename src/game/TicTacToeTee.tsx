@@ -19,10 +19,14 @@ export interface IGameState {
   player1?: IPlayer;
   player2?: IPlayer;
   playerBeingEdited: WhichPlayer;
+  boardWidth: number;
+  boardHeight: number;
 }
 
 class TicTacToeTee extends React.Component<IGameProps, IGameState> {
   public state = {
+    boardHeight: 3,
+    boardWidth: 3,
     isPlaying: false,
     player1: this.props.player1,
     player2: this.props.player2,

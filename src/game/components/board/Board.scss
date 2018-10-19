@@ -1,0 +1,35 @@
+@import "../../style-mixins.scss";
+
+.tic-tac-toe-tee {
+  .board-container {
+    // background-color: pink;
+
+    .board {
+      //   background-color: purple;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+
+      .cell {
+        // background-color: red;
+        border: 1px solid pink;
+        display: inline-block;
+        // width: 3em;
+        // height: 3em;
+
+        box-sizing: border-box;
+        flex-grow: 1;
+        // width: 100%; // Default to full width
+        // padding: 0.8em 1.2em;
+        overflow: hidden; // Or flex might break
+        list-style: none;
+        border: solid 3px white;
+        background: fade(slategrey, 20%);
+      }
+    }
+    .button {
+      @include button-default-style;
+    }
+  }
+}

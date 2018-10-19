@@ -1,11 +1,15 @@
 @import "../../style-mixins.scss";
 
 .tic-tac-toe-tee {
-  .action-bar {
-    background-color: red;
+  .board-container {
+    .action-bar {
+      background-color: red;
+      display: flex;
+      justify-items: center;
 
-    .button {
-      @include button-default-style;
+      .button {
+        @include button-default-style;
+      }
     }
   }
 }
