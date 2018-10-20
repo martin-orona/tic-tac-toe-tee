@@ -24,7 +24,13 @@ const PlayerDisplay = (props: IPlayerDisplayProps) => {
             src={props.avatarUrl}
             title={PlayerUtilities.getAvatarTitle(props.avatarUrl)}
           />
-          <label className="name">{props.name}</label>
+          <a
+            className="name"
+            href="#edit_player"
+            onClick={props.onChoosePlayer}
+          >
+            {props.name}
+          </a>
         </React.Fragment>
       )}
     </div>

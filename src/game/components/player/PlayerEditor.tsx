@@ -50,7 +50,7 @@ class PlayerEditor extends React.Component<IPlayerEditorProps, IPlayer> {
 
   public render() {
     return (
-      <div className="player-details">
+      <div className="player-editor">
         <form
           // tslint:disable-next-line:jsx-no-lambda
           onSubmit={event => {
