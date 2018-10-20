@@ -4,7 +4,7 @@ import Board from "./components/board/Board";
 import Header from "./components/Header";
 import PlayerDisplay from "./components/player/PlayerDisplay";
 import PlayerEditor from "./components/player/PlayerEditor";
-import GameLogic from "./GameLogic";
+import GameLogic, { ICell } from "./GameLogic";
 
 import "./Game.css";
 
@@ -21,6 +21,7 @@ export interface IGameState {
   player1?: IPlayer;
   player2?: IPlayer;
   playerBeingEdited: WhichPlayer;
+  board: ICell[];
   boardWidth: number;
   boardHeight: number;
 }
@@ -28,6 +29,7 @@ export interface IGameState {
 class Game extends React.Component<IGameProps, IGameState> {
   public state = {
     activePlayer: WhichPlayer.None,
+    board: [],
     boardHeight: 3,
     boardWidth: 3,
     isPlaying: false,
@@ -69,6 +71,10 @@ class Game extends React.Component<IGameProps, IGameState> {
                 onPlay={() => GameLogic.start(this)}
                 // tslint:disable-next-line:jsx-no-lambda
                 onReset={() => GameLogic.reset(this)}
+                // tslint:disable-next-line:jsx-no-lambda
+                onCellChosen={(row: number, column: number) =>
+                  GameLogic.cellChosen(this, row, column)
+                }
               />
 
               <PlayerDisplay

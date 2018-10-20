@@ -26,6 +26,12 @@
         list-style: none;
         border: solid 3px white;
         background: fade(slategrey, 20%);
+
+        .avatar {
+          height: 100%;
+          width: 100%;
+          margin: 0;
+        }
       }
     }
     .button {
