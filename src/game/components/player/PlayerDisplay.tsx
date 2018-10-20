@@ -1,5 +1,5 @@
 import * as React from "react";
-import { MouseEventHandler } from "../../sharedInterfaces";
+import { MouseEventHandler } from "../../common/sharedInterfaces";
 import * as PlayerUtilities from "./PlayerUtilities";
 
 import "./PlayerDisplay.css";

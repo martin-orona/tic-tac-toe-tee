@@ -1,12 +1,12 @@
 import * as React from "react";
+import { IPlayer, WhichPlayer } from "./common/sharedInterfaces";
 import Board from "./components/board/Board";
 import Header from "./components/Header";
 import PlayerDisplay from "./components/player/PlayerDisplay";
 import PlayerEditor from "./components/player/PlayerEditor";
-import GameLogic from "./logic/Game";
-import { IPlayer, WhichPlayer } from "./sharedInterfaces";
+import GameLogic from "./GameLogic";
 
-import "./TicTacToeTee.css";
+import "./Game.css";
 
 import DefaultAvatar from "./images/avatar01.png";
 
@@ -25,7 +25,7 @@ export interface IGameState {
   boardHeight: number;
 }
 
-class TicTacToeTee extends React.Component<IGameProps, IGameState> {
+class Game extends React.Component<IGameProps, IGameState> {
   public state = {
     activePlayer: WhichPlayer.None,
     boardHeight: 3,
@@ -108,4 +108,4 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
   }
 }
 
-export default TicTacToeTee;
+export default Game;

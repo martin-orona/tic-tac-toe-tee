@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IPlayer } from "../../sharedInterfaces";
+import { IPlayer } from "../../common/sharedInterfaces";
 import * as PlayerUtilities from "./PlayerUtilities";
 
 import "./PlayerEditor.css";

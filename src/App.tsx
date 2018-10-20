@@ -1,6 +1,6 @@
 import * as React from "react";
 import "./App.css";
-import TicTacToeTee from "./game/TicTacToeTee";
+import Game from "./game/Game";
 
 // import logo from "./logo.svg";
 
@@ -11,7 +11,7 @@ class App extends React.Component {
   public render() {
     return (
       <div>
-        <TicTacToeTee
+        <Game
           player1={{ name: "Jen", avatarUrl: Avatar1 }}
           player2={{ name: "Ben", avatarUrl: Avatar2 }}
         />
