@@ -5,6 +5,7 @@ import * as PlayerUtilities from "./PlayerUtilities";
 import "./PlayerDisplay.css";
 
 export interface IPlayerDisplayProps {
+  isActive: boolean;
   name?: string;
   avatarUrl: string;
   onChoosePlayer: MouseEventHandler;
@@ -12,7 +13,7 @@ export interface IPlayerDisplayProps {
 
 const PlayerDisplay = (props: IPlayerDisplayProps) => {
   return (
-    <div className="player-display">
+    <div className={`player-display ${props.isActive ? "active" : ""}`}>
       {!props.name ? (
         <button className="button" onClick={props.onChoosePlayer}>
           Choose Player 1

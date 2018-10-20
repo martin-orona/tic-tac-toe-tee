@@ -7,6 +7,13 @@
     justify-content: flex-end;
     align-items: center;
     padding: 1em;
+    margin: 1em;
+
+    &.active {
+      .avatar {
+        @include avatar-selected-border;
+      }
+    }
 
     .button {
       @include button-default-style;

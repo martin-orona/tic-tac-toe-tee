@@ -4,6 +4,7 @@ import Header from "./components/Header";
 import PlayerDisplay from "./components/player/PlayerDisplay";
 import PlayerEditor from "./components/player/PlayerEditor";
 import { IPlayer, WhichPlayer } from "./sharedInterfaces";
+import { Random } from "./Utilities";
 
 import "./TicTacToeTee.css";
 
@@ -16,6 +17,7 @@ export interface IGameProps {
 
 export interface IGameState {
   isPlaying: boolean;
+  activePlayer: WhichPlayer;
   player1?: IPlayer;
   player2?: IPlayer;
   playerBeingEdited: WhichPlayer;
@@ -25,6 +27,7 @@ export interface IGameState {
 
 class TicTacToeTee extends React.Component<IGameProps, IGameState> {
   public state = {
+    activePlayer: WhichPlayer.None,
     boardHeight: 3,
     boardWidth: 3,
     isPlaying: false,
@@ -39,42 +42,46 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
         <div className="tic-tac-toe-tee game">
           <Header />
 
-          <div className="body-container">
-            <PlayerDisplay
-              name={this.state.player1 ? this.state.player1.name : undefined}
-              avatarUrl={
-                this.state.player1
-                  ? this.state.player1.avatarUrl
-                  : DefaultAvatar
-              }
-              // tslint:disable-next-line:jsx-no-lambda
-              onChoosePlayer={() => this.onBeginChoosePlayer1()}
-            />
+          {this.state.playerBeingEdited !== WhichPlayer.None ? null : (
+            <div className="body-container">
+              <PlayerDisplay
+                isActive={this.state.activePlayer === WhichPlayer.One}
+                name={this.state.player1 ? this.state.player1.name : undefined}
+                avatarUrl={
+                  this.state.player1
+                    ? this.state.player1.avatarUrl
+                    : DefaultAvatar
+                }
+                // tslint:disable-next-line:jsx-no-lambda
+                onChoosePlayer={() => this.onBeginChoosePlayer1()}
+              />
 
-            <Board
-              {...this.state}
-              isReadyToBegin={
-                !this.state.isPlaying &&
-                !!this.state.player1 &&
-                !!this.state.player2
-              }
-              // tslint:disable-next-line:jsx-no-lambda
-              onPlay={() => this.onStartGame()}
-              // tslint:disable-next-line:jsx-no-lambda
-              onReset={() => this.onResetGame()}
-            />
+              <Board
+                {...this.state}
+                isReadyToBegin={
+                  !this.state.isPlaying &&
+                  !!this.state.player1 &&
+                  !!this.state.player2
+                }
+                // tslint:disable-next-line:jsx-no-lambda
+                onPlay={() => this.onStartGame()}
+                // tslint:disable-next-line:jsx-no-lambda
+                onReset={() => this.onResetGame()}
+              />
 
-            <PlayerDisplay
-              name={this.state.player2 ? this.state.player2.name : undefined}
-              avatarUrl={
-                this.state.player2
-                  ? this.state.player2.avatarUrl
-                  : DefaultAvatar
-              }
-              // tslint:disable-next-line:jsx-no-lambda
-              onChoosePlayer={() => this.onBeginChoosePlayer2()}
-            />
-          </div>
+              <PlayerDisplay
+                isActive={this.state.activePlayer === WhichPlayer.Two}
+                name={this.state.player2 ? this.state.player2.name : undefined}
+                avatarUrl={
+                  this.state.player2
+                    ? this.state.player2.avatarUrl
+                    : DefaultAvatar
+                }
+                // tslint:disable-next-line:jsx-no-lambda
+                onChoosePlayer={() => this.onBeginChoosePlayer2()}
+              />
+            </div>
+          )}
 
           {this.state.playerBeingEdited === WhichPlayer.None ? null : (
             <PlayerEditor
@@ -123,10 +130,16 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
   }
 
   private onStartGame() {
-    this.setState({ isPlaying: true });
+    this.setState({
+      activePlayer: Random.getInt_FromInclusiveRange(
+        WhichPlayer.One,
+        WhichPlayer.Two
+      ),
+      isPlaying: true
+    });
   }
   private onResetGame() {
-    this.setState({ isPlaying: false });
+    this.setState({ isPlaying: false, activePlayer: WhichPlayer.None });
   }
 }
 

@@ -26,9 +26,7 @@
         @include avatar-image;
 
         &.selected {
-          border-radius: 6px;
-          box-shadow: 0 0 8px rgba(81, 203, 238, 1);
-          border: 2px solid rgba(81, 203, 238, 1);
+          @include avatar-selected-border;
         }
       }
     }
