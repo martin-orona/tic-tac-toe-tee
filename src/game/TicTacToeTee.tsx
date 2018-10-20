@@ -3,8 +3,8 @@ import Board from "./components/board/Board";
 import Header from "./components/Header";
 import PlayerDisplay from "./components/player/PlayerDisplay";
 import PlayerEditor from "./components/player/PlayerEditor";
+import GameLogic from "./logic/Game";
 import { IPlayer, WhichPlayer } from "./sharedInterfaces";
-import { Random } from "./Utilities";
 
 import "./TicTacToeTee.css";
 
@@ -53,7 +53,9 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
                     : DefaultAvatar
                 }
                 // tslint:disable-next-line:jsx-no-lambda
-                onChoosePlayer={() => this.onBeginChoosePlayer1()}
+                onChoosePlayer={() =>
+                  GameLogic.player.onBeginEdit(this, WhichPlayer.One)
+                }
               />
 
               <Board
@@ -64,9 +66,9 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
                   !!this.state.player2
                 }
                 // tslint:disable-next-line:jsx-no-lambda
-                onPlay={() => this.onStartGame()}
+                onPlay={() => GameLogic.start(this)}
                 // tslint:disable-next-line:jsx-no-lambda
-                onReset={() => this.onResetGame()}
+                onReset={() => GameLogic.reset(this)}
               />
 
               <PlayerDisplay
@@ -78,7 +80,9 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
                     : DefaultAvatar
                 }
                 // tslint:disable-next-line:jsx-no-lambda
-                onChoosePlayer={() => this.onBeginChoosePlayer2()}
+                onChoosePlayer={() =>
+                  GameLogic.player.onBeginEdit(this, WhichPlayer.Two)
+                }
               />
             </div>
           )}
@@ -92,54 +96,15 @@ class TicTacToeTee extends React.Component<IGameProps, IGameState> {
               }
               // tslint:disable-next-line:jsx-no-lambda
               onAccepted={(player: IPlayer) =>
-                this.onFinishedEditingPlayer(player)
+                GameLogic.player.onEditFinished(this, player)
               }
               // tslint:disable-next-line:jsx-no-lambda
-              onCancelled={() => this.onCancelledEditingPlayer()}
+              onCancelled={() => GameLogic.player.onEditCancelled(this)}
             />
           )}
         </div>
       </React.Fragment>
     );
-  }
-
-  private onBeginChoosePlayer1() {
-    this.setState({ playerBeingEdited: WhichPlayer.One });
-  }
-
-  private onBeginChoosePlayer2() {
-    this.setState({ playerBeingEdited: WhichPlayer.Two });
-  }
-
-  private onFinishedEditingPlayer(player: IPlayer) {
-    this.setState(prev => {
-      return {
-        player1:
-          prev.playerBeingEdited === WhichPlayer.One ? player : prev.player1,
-        player2:
-          prev.playerBeingEdited === WhichPlayer.Two ? player : prev.player2,
-        playerBeingEdited: WhichPlayer.None
-      };
-    });
-  }
-
-  private onCancelledEditingPlayer() {
-    this.setState({
-      playerBeingEdited: WhichPlayer.None
-    });
-  }
-
-  private onStartGame() {
-    this.setState({
-      activePlayer: Random.getInt_FromInclusiveRange(
-        WhichPlayer.One,
-        WhichPlayer.Two
-      ),
-      isPlaying: true
-    });
-  }
-  private onResetGame() {
-    this.setState({ isPlaying: false, activePlayer: WhichPlayer.None });
   }
 }
 
