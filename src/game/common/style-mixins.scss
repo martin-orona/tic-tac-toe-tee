@@ -7,6 +7,10 @@
 
   @include floater;
   background-color: $button-color-default;
+
+  &:active {
+    transform: translateY(0.35em);
+  }
 }
 
 @mixin floater {

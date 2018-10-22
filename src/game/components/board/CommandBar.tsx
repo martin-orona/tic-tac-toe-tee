@@ -14,6 +14,12 @@ export interface ICommandBarProps {
 const CommandBar = (props: ICommandBarProps) => {
   return (
     <div className="action-bar">
+      <button className="settings menu button">
+        <div className="line" />
+        <div className="line" />
+        <div className="line" />
+      </button>
+
       {!props.isReadyToBegin ? null : (
         <button
           className="button"
