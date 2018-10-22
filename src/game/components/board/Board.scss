@@ -27,6 +27,10 @@
         border: solid 3px white;
         background: fade(slategrey, 20%);
 
+        &.winner {
+          @include avatar-selected-border;
+        }
+
         .avatar {
           height: 100%;
           width: 100%;

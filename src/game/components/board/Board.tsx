@@ -1,6 +1,11 @@
 import * as React from "react";
-import GameLogic, { ICell } from "src/game/GameLogic";
-import { IPlayer, WhichPlayer } from "../../common/sharedInterfaces";
+import GameLogic from "src/game/GameLogic";
+import {
+  ICell,
+  IGameResult,
+  IPlayer,
+  WhichPlayer
+} from "../../common/sharedInterfaces";
 import * as PlayerUtilities from "../player/PlayerUtilities";
 import CommandBar from "./CommandBar";
 
@@ -19,9 +24,11 @@ export interface IBoardProps {
   player1?: IPlayer;
   player2?: IPlayer;
   activePlayer: WhichPlayer;
+  winner: IGameResult;
   board: ICell[];
   boardWidth: number;
   boardHeight: number;
+  winningRowLength: number;
   onPlay: () => void;
   onReset: () => void;
   onCellChosen: (row: number, column: number) => void;
@@ -59,7 +66,9 @@ const Board = (props: IBoardProps) => {
 
                 return (
                   <div
-                    className={`cell ${avatarUrl ? "used" : ""}`}
+                    className={`cell ${avatarUrl ? "used" : ""} ${
+                      isWinningCell(props.winner, row, column) ? "winner" : ""
+                    }`}
                     // tslint:disable-next-line:jsx-no-lambda
                     onClick={event =>
                       props.isPlaying
@@ -88,5 +97,26 @@ const Board = (props: IBoardProps) => {
     </div>
   );
 };
+
+function isWinningCell(
+  winner: IGameResult,
+  row: number,
+  column: number
+): boolean {
+  if (!winner.isWon) {
+    return false;
+  }
+
+  let isWinner = false;
+
+  for (const cell of winner.cells as ICell[]) {
+    if (cell.row === row && cell.column === column) {
+      isWinner = true;
+      break;
+    }
+  }
+
+  return isWinner;
+}
 
 export default Board;

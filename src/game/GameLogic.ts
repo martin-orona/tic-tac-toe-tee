@@ -1,17 +1,17 @@
-import { IPlayer, WhichPlayer } from "./common/sharedInterfaces";
+import {
+  ICell,
+  IGameResult,
+  IPlayer,
+  WhichPlayer
+} from "./common/sharedInterfaces";
 import { Random } from "./common/Utilities";
 import Game from "./Game";
-
-export interface ICell {
-  row: number;
-  column: number;
-  player: WhichPlayer;
-}
 
 interface IBoardInfo {
   board: ICell[];
   boardWidth: number;
   boardHeight: number;
+  winningRowLength: number;
 }
 
 // #region game actions
@@ -23,7 +23,8 @@ function startGame(game: Game) {
       WhichPlayer.Two
     ),
     board: createBoard(game.state.boardWidth, game.state.boardHeight),
-    isPlaying: true
+    isPlaying: true,
+    winner: { isWon: false }
   });
 }
 
@@ -31,20 +32,149 @@ function resetGame(game: Game) {
   game.setState({
     activePlayer: WhichPlayer.None,
     board: createBoard(game.state.boardWidth, game.state.boardHeight),
-    isPlaying: false
+    isPlaying: false,
+    winner: { isWon: false }
   });
 }
 
 function cellChosen(game: Game, row: number, column: number) {
-  game.setState(prev => {
-    const board = copyBoard(prev.board);
-    (getCell(prev, row, column) as ICell).player = prev.activePlayer;
-    return {
-      activePlayer: getNextPLayer(prev.activePlayer),
-      board
-    };
-  });
+  if (isCellAlreadyUsed(game.state, row, column)) {
+    return;
+  }
+
+  let gameResult: IGameResult;
+
+  game.setState(
+    prev => {
+      const board = copyBoard(prev.board);
+      (getCell(prev, row, column) as ICell).player = prev.activePlayer;
+      gameResult = isGameWon(
+        { ...prev, board } as IBoardInfo,
+        row,
+        column,
+        prev.activePlayer
+      );
+      return {
+        activePlayer: getNextPLayer(prev.activePlayer),
+        board
+      };
+    },
+    () => {
+      if (gameResult.isWon) {
+        game.setState({
+          activePlayer: gameResult.player as WhichPlayer,
+          isPlaying: false,
+          winner: gameResult
+        });
+      }
+    }
+  );
 }
+
+// #region helpers
+
+function isCellAlreadyUsed(
+  boardInfo: IBoardInfo,
+  row: number,
+  column: number
+): boolean {
+  const cell = getCell(boardInfo, row, column) as ICell;
+  return cell.player !== WhichPlayer.None;
+}
+
+function isGameWon(
+  boardInfo: IBoardInfo,
+  row: number,
+  column: number,
+  player: WhichPlayer
+): IGameResult {
+  const anchorCell = getCell(boardInfo, row, column);
+  if (!anchorCell || anchorCell.player === WhichPlayer.None) {
+    return { isWon: false };
+  }
+
+  function check(
+    getNextRow: (current: number) => number,
+    getNextColumn: (current: number) => number
+  ) {
+    return isAnchorOfWinningRow(
+      boardInfo,
+      anchorCell as ICell,
+      getNextRow,
+      getNextColumn
+    );
+  }
+
+  // check horizontal - start
+  let result: IGameResult = check((r: number) => r, (c: number) => c + 1);
+  // check horizontal - end
+  if (!result.isWon) {
+    result = check((r: number) => r, (c: number) => c - 1);
+  }
+
+  // check vertical - start
+  if (!result.isWon) {
+    result = check((r: number) => r + 1, (c: number) => c);
+  }
+  // check vertical - end
+  if (!result.isWon) {
+    result = check((r: number) => r - 1, (c: number) => c);
+  }
+
+  // check diagonal downward - start
+  if (!result.isWon) {
+    result = check((r: number) => r + 1, (c: number) => c + 1);
+  }
+  // check diagonal downward - end
+  if (!result.isWon) {
+    result = check((r: number) => r - 1, (c: number) => c - 1);
+  }
+
+  // check diagonal upward - start
+  if (!result.isWon) {
+    result = check((r: number) => r - 1, (c: number) => c + 1);
+  }
+  // check diagonal upward - end
+  if (!result.isWon) {
+    result = check((r: number) => r + 1, (c: number) => c - 1);
+  }
+
+  return result;
+}
+
+function isAnchorOfWinningRow(
+  boardInfo: IBoardInfo,
+  anchorCell: ICell,
+  getNextRow: (current: number) => number,
+  getNextColumn: (current: number) => number
+): IGameResult {
+  const required = boardInfo.winningRowLength;
+  const player = anchorCell.player;
+
+  const cells = [anchorCell];
+  let matched = 1;
+  let cell: ICell = anchorCell;
+  let got: ICell | undefined;
+
+  for (let i = 0; i < required; i++) {
+    got = getCell(boardInfo, getNextRow(cell.row), getNextColumn(cell.column));
+    if (!got || got.player !== player) {
+      break;
+    }
+
+    cell = got as ICell;
+    cells.push(cell);
+    matched++;
+
+    if (matched >= required) {
+      return { isWon: true, cells };
+    }
+  }
+
+  return { isWon: false };
+}
+
+// #endregion helpers
 
 // #endregion game actions
 
@@ -82,8 +212,24 @@ function getCell(
   row: number,
   column: number
 ): ICell | undefined {
+  if (row < 0) {
+    return undefined;
+  }
+
+  if (row >= boardInfo.boardHeight) {
+    return undefined;
+  }
+
+  if (column < 0) {
+    return undefined;
+  }
+
+  if (column >= boardInfo.boardWidth) {
+    return undefined;
+  }
+
   const index = row * boardInfo.boardWidth + column;
-  if (index > boardInfo.board.length) {
+  if (index > boardInfo.board.length || index < 0) {
     return undefined;
   }
   return boardInfo.board[index];

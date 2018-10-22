@@ -1,10 +1,12 @@
 import * as React from "react";
+import { IGameResult } from "../../common/sharedInterfaces";
 
 import "./CommandBar.css";
 
 export interface ICommandBarProps {
   isPlaying: boolean;
   isReadyToBegin: boolean;
+  winner: IGameResult;
   onPlay: () => void;
   onReset: () => void;
 }
@@ -18,7 +20,7 @@ const CommandBar = (props: ICommandBarProps) => {
           // tslint:disable-next-line:jsx-no-lambda
           onClick={event => props.onPlay()}
         >
-          Play
+          Play {props.winner.isWon ? " again!" : ""}
         </button>
       )}
 

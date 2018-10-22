@@ -1,10 +1,15 @@
 import * as React from "react";
-import { IPlayer, WhichPlayer } from "./common/sharedInterfaces";
+import {
+  ICell,
+  IGameResult,
+  IPlayer,
+  WhichPlayer
+} from "./common/sharedInterfaces";
 import Board from "./components/board/Board";
 import Header from "./components/Header";
 import PlayerDisplay from "./components/player/PlayerDisplay";
 import PlayerEditor from "./components/player/PlayerEditor";
-import GameLogic, { ICell } from "./GameLogic";
+import GameLogic from "./GameLogic";
 
 import "./Game.css";
 
@@ -20,10 +25,12 @@ export interface IGameState {
   activePlayer: WhichPlayer;
   player1?: IPlayer;
   player2?: IPlayer;
+  winner: IGameResult;
   playerBeingEdited: WhichPlayer;
   board: ICell[];
   boardWidth: number;
   boardHeight: number;
+  winningRowLength: number;
 }
 
 class Game extends React.Component<IGameProps, IGameState> {
@@ -35,7 +42,9 @@ class Game extends React.Component<IGameProps, IGameState> {
     isPlaying: false,
     player1: this.props.player1,
     player2: this.props.player2,
-    playerBeingEdited: WhichPlayer.None
+    playerBeingEdited: WhichPlayer.None,
+    winner: { isWon: false },
+    winningRowLength: 3
   } as IGameState;
 
   public render() {
