@@ -1,0 +1,19 @@
+@mixin avatar-image {
+  height: 7em;
+  width: 7em;
+  margin: 0.5em;
+
+  @include avatar-border;
+}
+
+@mixin avatar-border {
+  border-radius: 6px;
+  box-shadow: 0 0 8px rgba(81, 203, 238, 0);
+  border: 2px solid rgba(81, 203, 238, 0);
+}
+
+@mixin avatar-selected-border {
+  @include avatar-border;
+  box-shadow: 0 0 8px rgba(81, 203, 238, 1);
+  border: 2px solid rgba(81, 203, 238, 1);
+}

@@ -1,4 +1,4 @@
-@import "../common/style-mixins.scss";
+@import "../shared/style.scss";
 
 .tic-tac-toe-tee {
   .settings.container {
@@ -19,17 +19,8 @@
       flex-direction: column;
     }
 
-    .group {
-      display: flex;
-      flex-direction: column;
-
-      &:not(:first-child) {
-        margin-top: 1em;
-      }
-    }
-
     .action-bar {
-      @include action-bar-style;
+      margin-top: 1em;
     }
   }
 }

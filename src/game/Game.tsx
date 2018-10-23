@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import Container from "../ui-components/containers/Container";
 import Board from "./components/board/Board";
 import Header from "./components/Header";
 import PlayerDisplay from "./components/player/PlayerDisplay";
@@ -66,11 +67,11 @@ class Game extends React.Component<IGameProps, IGameState> {
 
   public render() {
     return (
-      <div className="tic-tac-toe-tee game">
-        <Header />
+      <Container className="tic-tac-toe-tee game">
+        <Header>Tic Tac Toe Tee</Header>
 
         {this.state.playerBeingEdited !== WhichPlayer.None ? null : (
-          <div className="body-container">
+          <Container className="body-container">
             <PlayerDisplay
               isActive={this.state.activePlayer === WhichPlayer.One}
               name={this.state.player1 ? this.state.player1.name : undefined}
@@ -117,7 +118,7 @@ class Game extends React.Component<IGameProps, IGameState> {
                 GameLogic.player.onBeginEdit(this, WhichPlayer.Two)
               }
             />
-          </div>
+          </Container>
         )}
 
         {this.state.playerBeingEdited === WhichPlayer.None ? null : (
@@ -145,7 +146,7 @@ class Game extends React.Component<IGameProps, IGameState> {
           // tslint:disable-next-line:jsx-no-lambda
           onCancelled={() => this.hideSettings()}
         />
-      </div>
+      </Container>
     );
   }
 }

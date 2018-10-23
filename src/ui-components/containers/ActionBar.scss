@@ -1,0 +1,14 @@
+@import "../shared/style.scss";
+@import "./container-shared.scss";
+
+.action-bar {
+  @include floater-container;
+  display: flex;
+  justify-content: flex-end;
+
+  .button {
+    &:not(:first-child) {
+      margin-left: 2em;
+    }
+  }
+}

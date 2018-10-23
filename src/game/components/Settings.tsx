@@ -1,5 +1,12 @@
 import * as React from "react";
 
+import Button from "../../ui-components/actions/Button";
+import SubmitButton from "../../ui-components/actions/SubmitButton";
+import ActionBar from "../../ui-components/containers/ActionBar";
+import Container from "../../ui-components/containers/Container";
+import LabeledTextbox from "../../ui-components/text-input/LabeledTextbox";
+import Header from "./Header";
+
 import "./Settings.css";
 
 export interface ISettingsProps extends IGameSettings {
@@ -25,12 +32,12 @@ class Settings extends React.Component<ISettingsProps, IGameSettings> {
 
   public render() {
     return (
-      <div
-        className={`settings container ${
+      <Container
+        className={`settings floater ${
           this.props.isSettingsBeingEdited ? "displayed" : ""
         }`}
       >
-        <div className="dialog header">Game Settings</div>
+        <Header className="dialog">Game Settings</Header>
 
         <form
           // tslint:disable-next-line:jsx-no-lambda
@@ -39,56 +46,43 @@ class Settings extends React.Component<ISettingsProps, IGameSettings> {
             this.props.onAccepted(this.state);
           }}
         >
-          <div className="group">
-            <label htmlFor="settings-winning-row-length">Winning Row:</label>
-            <input
-              id="settings-winning-row-length"
-              type="text"
-              value={this.state.winningRowLength}
-              // tslint:disable-next-line:jsx-no-lambda
-              onChange={event =>
-                this.onIntSettingChange(event, "winningRowLength")
-              }
-              required={true}
-            />
-          </div>
+          <LabeledTextbox
+            id="settings-winning-row-length"
+            label="Winning Row"
+            value={this.state.winningRowLength}
+            // tslint:disable-next-line:jsx-no-lambda
+            onChange={event =>
+              this.onIntSettingChange(event, "winningRowLength")
+            }
+            required={true}
+          />
 
-          <div className="group">
-            <label htmlFor="settings-board-width">Board Width:</label>
-            <input
-              id="settings-board-width"
-              type="text"
-              value={this.state.boardWidth}
-              // tslint:disable-next-line:jsx-no-lambda
-              onChange={event => this.onIntSettingChange(event, "boardWidth")}
-              required={true}
-            />
-          </div>
+          <LabeledTextbox
+            id="settings-board-width"
+            label="Board Width"
+            value={this.state.boardWidth}
+            // tslint:disable-next-line:jsx-no-lambda
+            onChange={event => this.onIntSettingChange(event, "boardWidth")}
+            required={true}
+          />
 
-          <div className="group">
-            <label htmlFor="settings-board-height">Board Height:</label>
-            <input
-              id="settings-board-height"
-              type="text"
-              value={this.state.boardHeight}
-              // tslint:disable-next-line:jsx-no-lambda
-              onChange={event => this.onIntSettingChange(event, "boardHeight")}
-              required={true}
-            />
-          </div>
+          <LabeledTextbox
+            id="settings-board-height"
+            label="Board Height"
+            value={this.state.boardHeight}
+            // tslint:disable-next-line:jsx-no-lambda
+            onChange={event => this.onIntSettingChange(event, "boardHeight")}
+            required={true}
+          />
 
-          <div className="action-bar">
-            <input
-              type="submit"
-              className="accept button primary"
-              value="Accept"
-            />
-            <button className="cancel button" onClick={this.props.onCancelled}>
+          <ActionBar>
+            <SubmitButton label="Accept" />
+            <Button className="cancel" onClick={this.props.onCancelled}>
               Cancel
-            </button>
-          </div>
+            </Button>
+          </ActionBar>
         </form>
-      </div>
+      </Container>
     );
   }
 
@@ -97,7 +91,12 @@ class Settings extends React.Component<ISettingsProps, IGameSettings> {
     propName: string
   ) {
     event.preventDefault();
+
     const parsed = parseInt(event.target.value, 10);
+    if (isNaN(parsed)) {
+      return;
+    }
+
     const newState = {};
     newState[propName] = parsed;
     this.setState(newState);

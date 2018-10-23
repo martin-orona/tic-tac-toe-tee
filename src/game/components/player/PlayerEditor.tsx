@@ -1,5 +1,12 @@
 import * as React from "react";
-import { IPlayer } from "../../common/sharedInterfaces";
+
+import Button from "../../../ui-components/actions/Button";
+import SubmitButton from "../../../ui-components/actions/SubmitButton";
+import ActionBar from "../../../ui-components/containers/ActionBar";
+import Container from "../../../ui-components/containers/Container";
+import LabeledTextbox from "../../../ui-components/text-input/LabeledTextbox";
+import { IPlayer } from "../../shared/sharedInterfaces";
+import Header from "../Header";
 import * as PlayerUtilities from "./PlayerUtilities";
 
 import "./PlayerEditor.css";
@@ -50,8 +57,8 @@ class PlayerEditor extends React.Component<IPlayerEditorProps, IPlayer> {
 
   public render() {
     return (
-      <div className="player-editor">
-        <div className="dialog header">Player Settings</div>
+      <Container className="player-editor">
+        <Header className="dialog">Player Settings</Header>
 
         <form
           // tslint:disable-next-line:jsx-no-lambda
@@ -60,17 +67,14 @@ class PlayerEditor extends React.Component<IPlayerEditorProps, IPlayer> {
             this.props.onAccepted(this.state);
           }}
         >
-          <div className="group">
-            <label htmlFor="player-details-name">Name:</label>
-            <input
-              id="player-details-name"
-              type="text"
-              value={this.state.name}
-              // tslint:disable-next-line:jsx-no-lambda
-              onChange={event => this.onNameChange(event)}
-              required={true}
-            />
-          </div>
+          <LabeledTextbox
+            id="player-details-name"
+            label="Name"
+            value={this.state.name}
+            // tslint:disable-next-line:jsx-no-lambda
+            onChange={event => this.onNameChange(event)}
+            required={true}
+          />
 
           <div className="group">
             <label>Avatar</label>
@@ -90,18 +94,14 @@ class PlayerEditor extends React.Component<IPlayerEditorProps, IPlayer> {
             </div>
           </div>
 
-          <div className="action-bar">
-            <input
-              type="submit"
-              className="accept button primary"
-              value="Accept"
-            />
-            <button className="cancel button" onClick={this.props.onCancelled}>
+          <ActionBar>
+            <SubmitButton label="Accept" />
+            <Button className="Cancel" onClick={this.props.onCancelled}>
               Cancel
-            </button>
-          </div>
+            </Button>
+          </ActionBar>
         </form>
-      </div>
+      </Container>
     );
   }
 

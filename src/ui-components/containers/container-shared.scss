@@ -1,0 +1,7 @@
+@import "../shared/style.scss";
+
+@mixin floater-container {
+  background-color: $floater-container-background-color;
+  @include floater-shadow;
+  padding: 1em;
+}

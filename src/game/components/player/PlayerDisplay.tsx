@@ -1,5 +1,8 @@
 import * as React from "react";
-import { MouseEventHandler } from "../../common/sharedInterfaces";
+
+import Button from "../../../ui-components/actions/Button";
+import Container from "../../../ui-components/containers/Container";
+import { MouseEventHandler } from "../../shared/sharedInterfaces";
 import * as PlayerUtilities from "./PlayerUtilities";
 
 import "./PlayerDisplay.css";
@@ -13,11 +16,9 @@ export interface IPlayerDisplayProps {
 
 const PlayerDisplay = (props: IPlayerDisplayProps) => {
   return (
-    <div className={`player-display ${props.isActive ? "active" : ""}`}>
+    <Container className={`player-display ${props.isActive ? "active" : ""}`}>
       {!props.name ? (
-        <button className="button" onClick={props.onChoosePlayer}>
-          Choose Player 1
-        </button>
+        <Button onClick={props.onChoosePlayer}>Choose Player 1</Button>
       ) : (
         <React.Fragment>
           <img
@@ -34,7 +35,7 @@ const PlayerDisplay = (props: IPlayerDisplayProps) => {
           </a>
         </React.Fragment>
       )}
-    </div>
+    </Container>
   );
 };
 

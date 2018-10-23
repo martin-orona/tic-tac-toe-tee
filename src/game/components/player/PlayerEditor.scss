@@ -1,4 +1,4 @@
-@import "../../common/style-mixins.scss";
+@import "../../shared/style.scss";
 
 .tic-tac-toe-tee {
   .player-editor {
@@ -29,10 +29,6 @@
           @include avatar-selected-border;
         }
       }
-    }
-
-    .action-bar {
-      @include action-bar-style;
     }
   }
 }

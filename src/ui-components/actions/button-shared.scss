@@ -1,0 +1,16 @@
+@import "../shared/style.scss";
+
+$button-color-default: $floater-background-color;
+
+@mixin button-default-style {
+  width: auto;
+  border: 0;
+  padding: 1.125em 1.5em;
+
+  @include floater;
+  background-color: $button-color-default;
+
+  &:active {
+    transform: translateY(0.35em);
+  }
+}

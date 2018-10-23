@@ -1,11 +1,13 @@
 import * as React from "react";
-import GameLogic from "src/game/GameLogic";
+
+import Container from "../../../ui-components/containers/Container";
+import GameLogic from "../../GameLogic";
 import {
   ICell,
   IGameResult,
   IPlayer,
   WhichPlayer
-} from "../../common/sharedInterfaces";
+} from "../../shared/sharedInterfaces";
 import * as PlayerUtilities from "../player/PlayerUtilities";
 import CommandBar, { IBoardCommandBarProps } from "./CommandBar";
 
@@ -50,7 +52,7 @@ const Board = (props: IBoardProps) => {
   };
 
   return (
-    <div className="board-container">
+    <Container className="board-container">
       <div className="board" style={BoardStyle}>
         {Array.from(Array(props.boardWidth).keys()).map(
           (row: number, rowIndex: number) => {
@@ -95,7 +97,7 @@ const Board = (props: IBoardProps) => {
       </div>
 
       <CommandBar {...props} />
-    </div>
+    </Container>
   );
 };
 

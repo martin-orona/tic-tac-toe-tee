@@ -1,0 +1,8 @@
+@import "../shared/style.scss";
+@import "./container-shared.scss";
+
+.container {
+  &.floater {
+    @include floater-container;
+  }
+}

@@ -1,4 +1,4 @@
-@import "../../common/style-mixins.scss";
+@import "../../shared/style.scss";
 
 .tic-tac-toe-tee {
   .player-display {
@@ -13,10 +13,6 @@
       .avatar {
         @include avatar-selected-border;
       }
-    }
-
-    .button {
-      @include button-default-style;
     }
 
     .avatar {

@@ -1,27 +1,9 @@
-@import "../../common/style-mixins.scss";
+@import "../../shared/style.scss";
 
 .tic-tac-toe-tee {
   .board-container {
     .action-bar {
-      display: flex;
       justify-content: center;
-
-      .button {
-        @include button-default-style;
-      }
-
-      .settings.menu {
-        display: flex;
-        flex-direction: column;
-        padding: 1em;
-        margin-right: 1em;
-
-        .line {
-          width: 2em;
-          padding: 0.125em;
-          border-bottom: 0.35em solid dimgray;
-        }
-      }
     }
   }
 }

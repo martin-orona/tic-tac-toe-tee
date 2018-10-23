@@ -1,5 +1,9 @@
 import * as React from "react";
-import { IGameResult } from "../../common/sharedInterfaces";
+
+import Button from "../../../ui-components/actions/Button";
+import HamburgerButton from "../../../ui-components/actions/HamburgerButton";
+import ActionBar from "../../../ui-components/containers/ActionBar";
+import { IGameResult } from "../../shared/sharedInterfaces";
 
 import "./CommandBar.css";
 
@@ -14,38 +18,34 @@ export interface IBoardCommandBarProps {
 
 const CommandBar = (props: IBoardCommandBarProps) => {
   return (
-    <div className="action-bar">
-      <button
-        className="settings menu button"
+    <ActionBar>
+      <HamburgerButton
+        className="settings"
         title="Settings Menu"
         // tslint:disable-next-line:jsx-no-lambda
         onClick={event => props.onShowSettings()}
-      >
-        <div className="line" />
-        <div className="line" />
-        <div className="line" />
-      </button>
+      />
 
       {!props.isReadyToBegin ? null : (
-        <button
-          className="play button"
+        <Button
+          className="play"
           // tslint:disable-next-line:jsx-no-lambda
           onClick={event => props.onPlay()}
         >
           Play {props.winner.isWon ? " again!" : ""}
-        </button>
+        </Button>
       )}
 
       {!props.isPlaying ? null : (
-        <button
-          className="reset button"
+        <Button
+          className="reset"
           // tslint:disable-next-line:jsx-no-lambda
           onClick={event => props.onReset()}
         >
           Cancel
-        </button>
+        </Button>
       )}
-    </div>
+    </ActionBar>
   );
 };
 

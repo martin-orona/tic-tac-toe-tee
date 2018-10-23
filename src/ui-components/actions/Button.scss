@@ -1,0 +1,6 @@
+@import "../shared/style.scss";
+@import "./button-shared.scss";
+
+.button {
+  @include button-default-style;
+}

@@ -1,11 +1,11 @@
+import Game from "./Game";
 import {
   ICell,
   IGameResult,
   IPlayer,
   WhichPlayer
-} from "./common/sharedInterfaces";
-import { Random } from "./common/Utilities";
-import Game from "./Game";
+} from "./shared/sharedInterfaces";
+import { Random } from "./shared/Utilities";
 
 interface IBoardInfo {
   board: ICell[];
