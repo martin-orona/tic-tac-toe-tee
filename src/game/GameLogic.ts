@@ -14,6 +14,11 @@ interface IBoardInfo {
   winningRowLength: number;
 }
 
+interface ICellPosition {
+  row: number;
+  column: number;
+}
+
 // #region game actions
 
 function startGame(game: Game) {
@@ -93,85 +98,103 @@ function isGameWon(
     return { isWon: false };
   }
 
-  function check(
-    getNextRow: (current: number) => number,
-    getNextColumn: (current: number) => number
-  ) {
-    return isAnchorOfWinningRow(
+  // check horizontal
+  let result: IGameResult = isPartOfWinningRow(
+    boardInfo,
+    anchorCell,
+    (p: ICellPosition) => {
+      return { row: p.row, column: p.column + 1 };
+    },
+    (p: ICellPosition) => {
+      return { row: p.row, column: p.column - 1 };
+    }
+  );
+
+  // check vertical
+  if (!result.isWon) {
+    result = isPartOfWinningRow(
       boardInfo,
-      anchorCell as ICell,
-      getNextRow,
-      getNextColumn
+      anchorCell,
+      (p: ICellPosition) => {
+        return { row: p.row + 1, column: p.column };
+      },
+      (p: ICellPosition) => {
+        return { row: p.row - 1, column: p.column };
+      }
     );
   }
 
-  // check horizontal - start
-  let result: IGameResult = check((r: number) => r, (c: number) => c + 1);
-  // check horizontal - end
+  // check diagonal downward
   if (!result.isWon) {
-    result = check((r: number) => r, (c: number) => c - 1);
+    result = isPartOfWinningRow(
+      boardInfo,
+      anchorCell,
+      (p: ICellPosition) => {
+        return { row: p.row + 1, column: p.column + 1 };
+      },
+      (p: ICellPosition) => {
+        return { row: p.row - 1, column: p.column - 1 };
+      }
+    );
   }
 
-  // check vertical - start
+  // check diagonal upward
   if (!result.isWon) {
-    result = check((r: number) => r + 1, (c: number) => c);
-  }
-  // check vertical - end
-  if (!result.isWon) {
-    result = check((r: number) => r - 1, (c: number) => c);
-  }
-
-  // check diagonal downward - start
-  if (!result.isWon) {
-    result = check((r: number) => r + 1, (c: number) => c + 1);
-  }
-  // check diagonal downward - end
-  if (!result.isWon) {
-    result = check((r: number) => r - 1, (c: number) => c - 1);
-  }
-
-  // check diagonal upward - start
-  if (!result.isWon) {
-    result = check((r: number) => r - 1, (c: number) => c + 1);
-  }
-  // check diagonal upward - end
-  if (!result.isWon) {
-    result = check((r: number) => r + 1, (c: number) => c - 1);
+    result = isPartOfWinningRow(
+      boardInfo,
+      anchorCell,
+      (p: ICellPosition) => {
+        return { row: p.row - 1, column: p.column + 1 };
+      },
+      (p: ICellPosition) => {
+        return { row: p.row + 1, column: p.column - 1 };
+      }
+    );
   }
 
   return result;
 }
 
-function isAnchorOfWinningRow(
+function isPartOfWinningRow(
   boardInfo: IBoardInfo,
   anchorCell: ICell,
-  getNextRow: (current: number) => number,
-  getNextColumn: (current: number) => number
+  getNextCellPosition: (current: ICellPosition) => ICellPosition,
+  getPreviousCellPosition: (current: ICellPosition) => ICellPosition
 ): IGameResult {
-  const required = boardInfo.winningRowLength;
-  const player = anchorCell.player;
+  const before = getMatches(boardInfo, anchorCell, getPreviousCellPosition);
+  const after = getMatches(boardInfo, anchorCell, getNextCellPosition);
+  const cells = before.concat(anchorCell, after);
 
-  const cells = [anchorCell];
-  let matched = 1;
-  let cell: ICell = anchorCell;
-  let got: ICell | undefined;
-
-  for (let i = 0; i < required; i++) {
-    got = getCell(boardInfo, getNextRow(cell.row), getNextColumn(cell.column));
-    if (!got || got.player !== player) {
-      break;
-    }
-
-    cell = got as ICell;
-    cells.push(cell);
-    matched++;
-
-    if (matched >= required) {
-      return { isWon: true, cells };
-    }
+  if (cells.length >= boardInfo.winningRowLength) {
+    return { isWon: true, cells };
+  } else {
+    return { isWon: false };
   }
 
-  return { isWon: false };
+  function getMatches(
+    board: IBoardInfo,
+    anchor: ICell,
+    getNextPosition: (current: ICellPosition) => ICellPosition
+  ) {
+    const found: ICell[] = [];
+    let position: ICellPosition;
+    let cell: ICell | undefined = anchor;
+    const player = anchor.player;
+    let isMatch = true;
+
+    do {
+      position = getNextPosition(cell as ICell);
+      cell = getCell(boardInfo, position.row, position.column);
+
+      if (!cell || cell.player !== player) {
+        isMatch = false;
+      } else {
+        found.push(cell);
+      }
+    } while (isMatch);
+
+    return found;
+  }
 }
 
 // #endregion helpers
