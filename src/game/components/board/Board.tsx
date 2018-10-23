@@ -7,7 +7,7 @@ import {
   WhichPlayer
 } from "../../common/sharedInterfaces";
 import * as PlayerUtilities from "../player/PlayerUtilities";
-import CommandBar from "./CommandBar";
+import CommandBar, { IBoardCommandBarProps } from "./CommandBar";
 
 import "./Board.css";
 
@@ -18,19 +18,20 @@ const CellHeight = `${CellLength}${CellLengthUnit}`;
 const CellWidth = `${CellLength}${CellLengthUnit}`;
 const CellMargin = `${CellSpaceBetween / 2}${CellLengthUnit}`;
 
-export interface IBoardProps {
-  isPlaying: boolean;
-  isReadyToBegin: boolean;
+export interface IBoardProps extends IBoardCommandBarProps {
+  // isPlaying: boolean;
+  // isReadyToBegin: boolean;
+  // winner: IGameResult;
+  // onPlay: () => void;
+  // onReset: () => void;
+  // onShowSettings: () => void;
   player1?: IPlayer;
   player2?: IPlayer;
   activePlayer: WhichPlayer;
-  winner: IGameResult;
   board: ICell[];
   boardWidth: number;
   boardHeight: number;
   winningRowLength: number;
-  onPlay: () => void;
-  onReset: () => void;
   onCellChosen: (row: number, column: number) => void;
 }
 

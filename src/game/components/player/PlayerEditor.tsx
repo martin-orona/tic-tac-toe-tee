@@ -51,13 +51,14 @@ class PlayerEditor extends React.Component<IPlayerEditorProps, IPlayer> {
   public render() {
     return (
       <div className="player-editor">
+        <div className="dialog header">Player Settings</div>
+
         <form
           // tslint:disable-next-line:jsx-no-lambda
           onSubmit={event => {
             event.preventDefault();
             this.props.onAccepted(this.state);
           }}
-          // onSubmit={event => onSubmitting(event, this)}
         >
           <div className="group">
             <label htmlFor="player-details-name">Name:</label>
@@ -92,10 +93,10 @@ class PlayerEditor extends React.Component<IPlayerEditorProps, IPlayer> {
           <div className="action-bar">
             <input
               type="submit"
-              className="button primary accept"
+              className="accept button primary"
               value="Accept"
             />
-            <button className="button cancel" onClick={this.props.onCancelled}>
+            <button className="cancel button" onClick={this.props.onCancelled}>
               Cancel
             </button>
           </div>

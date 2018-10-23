@@ -1,7 +1,9 @@
-@import "../../common/style-mixins.scss";
+@import "../common/style-mixins.scss";
 
 .tic-tac-toe-tee {
-  .player-editor {
+  .settings.container {
+    display: none;
+
     width: auto;
     border: 0;
     margin-top: 1.25em;
@@ -12,22 +14,17 @@
     box-shadow: 0 40px 50px rgba(0, 0, 0, 0.25);
     outline: none;
 
+    &.displayed {
+      display: flex;
+      flex-direction: column;
+    }
+
     .group {
       display: flex;
       flex-direction: column;
 
       &:not(:first-child) {
         margin-top: 1em;
-      }
-    }
-
-    .avatars {
-      > img {
-        @include avatar-image;
-
-        &.selected {
-          @include avatar-selected-border;
-        }
       }
     }
 

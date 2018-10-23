@@ -3,18 +3,24 @@ import { IGameResult } from "../../common/sharedInterfaces";
 
 import "./CommandBar.css";
 
-export interface ICommandBarProps {
+export interface IBoardCommandBarProps {
   isPlaying: boolean;
   isReadyToBegin: boolean;
   winner: IGameResult;
   onPlay: () => void;
   onReset: () => void;
+  onShowSettings: () => void;
 }
 
-const CommandBar = (props: ICommandBarProps) => {
+const CommandBar = (props: IBoardCommandBarProps) => {
   return (
     <div className="action-bar">
-      <button className="settings menu button">
+      <button
+        className="settings menu button"
+        title="Settings Menu"
+        // tslint:disable-next-line:jsx-no-lambda
+        onClick={event => props.onShowSettings()}
+      >
         <div className="line" />
         <div className="line" />
         <div className="line" />
@@ -22,7 +28,7 @@ const CommandBar = (props: ICommandBarProps) => {
 
       {!props.isReadyToBegin ? null : (
         <button
-          className="button"
+          className="play button"
           // tslint:disable-next-line:jsx-no-lambda
           onClick={event => props.onPlay()}
         >
@@ -32,7 +38,7 @@ const CommandBar = (props: ICommandBarProps) => {
 
       {!props.isPlaying ? null : (
         <button
-          className="button"
+          className="reset button"
           // tslint:disable-next-line:jsx-no-lambda
           onClick={event => props.onReset()}
         >

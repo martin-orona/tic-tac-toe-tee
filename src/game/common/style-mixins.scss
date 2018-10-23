@@ -1,5 +1,17 @@
 @import "./style-constants.scss";
 
+@mixin action-bar-style {
+  @include floater-container;
+
+  .button {
+    @include button-default-style;
+
+    &:not(:first-child) {
+      margin-left: 2em;
+    }
+  }
+}
+
 @mixin button-default-style {
   width: auto;
   border: 0;
