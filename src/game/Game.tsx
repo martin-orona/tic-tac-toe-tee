@@ -2,6 +2,7 @@ import * as React from "react";
 
 import Container from "../ui-components/containers/Container";
 import Board from "./components/board/Board";
+import CommandBar from "./components/CommandBar";
 import Header from "./components/Header";
 import PlayerDisplay from "./components/player/PlayerDisplay";
 import PlayerEditor from "./components/player/PlayerEditor";
@@ -42,15 +43,15 @@ class Game extends React.Component<IGameProps, IGameState> {
   public state = {
     activePlayer: WhichPlayer.None,
     board: [],
-    boardHeight: 3,
-    boardWidth: 3,
+    boardHeight: 5,
+    boardWidth: 5,
     isPlaying: false,
     isSettingsBeingEdited: false,
     player1: this.props.player1,
     player2: this.props.player2,
     playerBeingEdited: WhichPlayer.None,
     winner: { isWon: false },
-    winningRowLength: 3
+    winningRowLength: 4
   } as IGameState;
 
   public showSettings(): void {
@@ -70,7 +71,8 @@ class Game extends React.Component<IGameProps, IGameState> {
       <Container className="tic-tac-toe-tee game">
         <Header>Tic Tac Toe Tee</Header>
 
-        {this.state.playerBeingEdited !== WhichPlayer.None ? null : (
+        {this.state.playerBeingEdited !== WhichPlayer.None ||
+        this.state.isSettingsBeingEdited ? null : (
           <Container className="body-container">
             <PlayerDisplay
               isActive={this.state.activePlayer === WhichPlayer.One}
@@ -88,22 +90,26 @@ class Game extends React.Component<IGameProps, IGameState> {
 
             <Board
               {...this.state}
-              isReadyToBegin={
-                !this.state.isPlaying &&
-                !!this.state.player1 &&
-                !!this.state.player2
-              }
-              // tslint:disable-next-line:jsx-no-lambda
-              onPlay={() => GameLogic.start(this)}
-              // tslint:disable-next-line:jsx-no-lambda
-              onReset={() => GameLogic.reset(this)}
               // tslint:disable-next-line:jsx-no-lambda
               onCellChosen={(row: number, column: number) =>
                 GameLogic.cellChosen(this, row, column)
               }
-              // tslint:disable-next-line:jsx-no-lambda
-              onShowSettings={() => this.showSettings()}
-            />
+            >
+              <CommandBar
+                {...this.state}
+                isReadyToBegin={
+                  !this.state.isPlaying &&
+                  !!this.state.player1 &&
+                  !!this.state.player2
+                }
+                // tslint:disable-next-line:jsx-no-lambda
+                onPlay={() => GameLogic.start(this)}
+                // tslint:disable-next-line:jsx-no-lambda
+                onReset={() => GameLogic.reset(this)}
+                // tslint:disable-next-line:jsx-no-lambda
+                onShowSettings={() => this.showSettings()}
+              />
+            </Board>
 
             <PlayerDisplay
               isActive={this.state.activePlayer === WhichPlayer.Two}

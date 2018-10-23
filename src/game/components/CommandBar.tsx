@@ -1,9 +1,9 @@
 import * as React from "react";
 
-import Button from "../../../ui-components/actions/Button";
-import HamburgerButton from "../../../ui-components/actions/HamburgerButton";
-import ActionBar from "../../../ui-components/containers/ActionBar";
-import { IGameResult } from "../../shared/sharedInterfaces";
+import Button from "../../ui-components/actions/Button";
+import HamburgerButton from "../../ui-components/actions/HamburgerButton";
+import ActionBar from "../../ui-components/containers/ActionBar";
+import { IGameResult } from "../shared/sharedInterfaces";
 
 import "./CommandBar.css";
 

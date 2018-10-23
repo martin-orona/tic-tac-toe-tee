@@ -9,7 +9,6 @@ import {
   WhichPlayer
 } from "../../shared/sharedInterfaces";
 import * as PlayerUtilities from "../player/PlayerUtilities";
-import CommandBar, { IBoardCommandBarProps } from "./CommandBar";
 
 import "./Board.css";
 
@@ -20,13 +19,9 @@ const CellHeight = `${CellLength}${CellLengthUnit}`;
 const CellWidth = `${CellLength}${CellLengthUnit}`;
 const CellMargin = `${CellSpaceBetween / 2}${CellLengthUnit}`;
 
-export interface IBoardProps extends IBoardCommandBarProps {
-  // isPlaying: boolean;
-  // isReadyToBegin: boolean;
-  // winner: IGameResult;
-  // onPlay: () => void;
-  // onReset: () => void;
-  // onShowSettings: () => void;
+export interface IBoardProps {
+  isPlaying: boolean;
+  winner: IGameResult;
   player1?: IPlayer;
   player2?: IPlayer;
   activePlayer: WhichPlayer;
@@ -35,6 +30,7 @@ export interface IBoardProps extends IBoardCommandBarProps {
   boardHeight: number;
   winningRowLength: number;
   onCellChosen: (row: number, column: number) => void;
+  children?: React.ReactNode;
 }
 
 const Board = (props: IBoardProps) => {
@@ -96,7 +92,7 @@ const Board = (props: IBoardProps) => {
         )}
       </div>
 
-      <CommandBar {...props} />
+      {props.children}
     </Container>
   );
 };
@@ -112,6 +108,7 @@ function isWinningCell(
 
   let isWinner = false;
 
+  // NOTE: This looks like an inefficient search, but the list is short.
   for (const cell of winner.cells as ICell[]) {
     if (cell.row === row && cell.column === column) {
       isWinner = true;
