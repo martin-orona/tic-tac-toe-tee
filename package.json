@@ -1,30 +1,14 @@
 {
-  "name": "tic-tac-toe-tee",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "react": "^16.5.2",
-    "react-dom": "^16.5.2",
-    "react-scripts-ts": "3.1.0"
-  },
+  "name": "tic-tac-toe-tee_server",
+  "version": "1.0.0",
   "scripts": {
-    "build-css": "node-sass-chokidar src/ -o src/",
-    "watch-css": "npm run build-css && node-sass-chokidar src/ -o src/ --watch --recursive",
-    "build-watch-css": "npm run build-css && npm run watch-css",
-    "start-js": "react-scripts-ts start",
-    "start": "npm-run-all -p build-watch-css start-js",
-    "build-js": "react-scripts-ts build",
-    "build": "npm run build-css && npm run build-js",
-    "test": "react-scripts-ts test --env=jsdom",
-    "eject": "react-scripts-ts eject"
+    "client": "cd client && npm start",
+    "server": "cd server && npm start",
+    "dev": "concurrently --kill-others-on-fail \"npm run server\" \"npm run client\"",
+    "start": "npm run dev"
   },
+  "dependencies": {},
   "devDependencies": {
-    "@types/jest": "^23.3.5",
-    "@types/node": "^10.12.0",
-    "@types/react": "^16.4.18",
-    "@types/react-dom": "^16.0.9",
-    "node-sass-chokidar": "^1.3.4",
-    "npm-run-all": "^4.1.3",
-    "typescript": "^3.1.3"
+    "concurrently": "^3.5.0"
   }
 }

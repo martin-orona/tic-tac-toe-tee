@@ -8,6 +8,17 @@ import Avatar2 from "./game/images/avatar01.png";
 import Avatar1 from "./game/images/avatar02.png";
 
 class App extends React.Component {
+  public state = { response: "no request made yet" };
+
+  public componentDidMount() {
+    this.callApi()
+      .then(res => this.setState({ response: res.express }))
+      .catch(err => {
+        // tslint:disable-next-line:no-console
+        console.log(err);
+      });
+  }
+
   public render() {
     return (
       <div>
@@ -15,6 +26,8 @@ class App extends React.Component {
           player1={{ name: "Jen", avatarUrl: Avatar1 }}
           player2={{ name: "Ben", avatarUrl: Avatar2 }}
         />
+
+        <div>server response: {this.state.response}</div>
         {/* <br />
         <br />
         <hr />
@@ -32,6 +45,17 @@ class App extends React.Component {
       </div>
     );
   }
+
+  private callApi = async () => {
+    const response = await fetch("/api/hello");
+    const body = await response.json();
+
+    if (response.status !== 200) {
+      throw Error(body.message);
+    }
+
+    return body;
+  };
 }
 
 export default App;
