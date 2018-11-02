@@ -5,7 +5,7 @@ import SubmitButton from "../../../ui-components/actions/SubmitButton";
 import ActionBar from "../../../ui-components/containers/ActionBar";
 import Container from "../../../ui-components/containers/Container";
 import LabeledTextbox from "../../../ui-components/text-input/LabeledTextbox";
-import { IPlayer } from "../../shared/sharedInterfaces";
+import { IPlayer, WhichPlayer } from "../../shared/sharedInterfaces";
 import Header from "../Header";
 import * as PlayerUtilities from "./PlayerUtilities";
 
@@ -44,8 +44,9 @@ const avatars: string[] = [
 ];
 
 export interface IPlayerEditorProps {
+  which: WhichPlayer;
   player?: IPlayer;
-  onAccepted: (player: IPlayer) => void;
+  onAccepted: (which: WhichPlayer, player: IPlayer) => void;
   onCancelled: () => void;
 }
 
@@ -64,7 +65,7 @@ class PlayerEditor extends React.Component<IPlayerEditorProps, IPlayer> {
           // tslint:disable-next-line:jsx-no-lambda
           onSubmit={event => {
             event.preventDefault();
-            this.props.onAccepted(this.state);
+            this.props.onAccepted(this.props.which, this.state);
           }}
         >
           <LabeledTextbox

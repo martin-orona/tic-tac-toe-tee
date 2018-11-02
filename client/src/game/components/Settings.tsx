@@ -1,5 +1,7 @@
 import * as React from "react";
 
+import { IGameSettings, IGameState } from "../shared/sharedInterfaces";
+
 import Button from "../../ui-components/actions/Button";
 import SubmitButton from "../../ui-components/actions/SubmitButton";
 import ActionBar from "../../ui-components/containers/ActionBar";
@@ -9,26 +11,13 @@ import Header from "./Header";
 
 import "./Settings.css";
 
-export interface ISettingsProps extends IGameSettings {
-  winningRowLength: number;
-  isSettingsBeingEdited: boolean;
+export interface ISettingsProps extends IGameState {
   onAccepted: (settings: IGameSettings) => void;
   onCancelled: () => void;
 }
 
-// tslint:disable-next-line:no-empty-interface
-export interface IGameSettings {
-  boardWidth: number;
-  boardHeight: number;
-  winningRowLength: number;
-}
-
 class Settings extends React.Component<ISettingsProps, IGameSettings> {
-  public state = {
-    boardHeight: this.props.boardHeight,
-    boardWidth: this.props.boardWidth,
-    winningRowLength: this.props.winningRowLength
-  } as IGameSettings;
+  public state = { ...this.props.gameSettings } as IGameSettings;
 
   public render() {
     return (
@@ -77,7 +66,15 @@ class Settings extends React.Component<ISettingsProps, IGameSettings> {
 
           <ActionBar>
             <SubmitButton label="Accept" />
-            <Button className="cancel" onClick={this.props.onCancelled}>
+            <Button
+              className="cancel"
+              // tslint:disable-next-line:jsx-no-lambda
+              onClick={(event: React.MouseEvent) => {
+                event.preventDefault();
+                this.props.onCancelled();
+                this.setState({ ...this.props.gameSettings });
+              }}
+            >
               Cancel
             </Button>
           </ActionBar>

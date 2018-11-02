@@ -1,9 +1,11 @@
-import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import App from './App';
+import * as React from "react";
+import * as ReactDOM from "react-dom";
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<App />, div);
+import App, { IAppProps } from "./App";
+
+it("renders without crashing", () => {
+  const div = document.createElement("div");
+  const props = {} as IAppProps;
+  ReactDOM.render(<App {...props} />, div);
   ReactDOM.unmountComponentAtNode(div);
 });

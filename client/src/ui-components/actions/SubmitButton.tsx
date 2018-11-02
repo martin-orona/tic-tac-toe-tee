@@ -9,11 +9,9 @@ export interface ISubmitButtonProps {
 
 const SubmitButton = (props: ISubmitButtonProps) => {
   return (
-    <input
-      type="submit"
-      className={`${props.className} accept submit button`}
-      value={props.label}
-    />
+    <button type="submit" className={`${props.className} accept submit button`}>
+      {props.label}
+    </button>
   );
 };
 

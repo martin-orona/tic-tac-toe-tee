@@ -2,7 +2,7 @@ import * as React from "react";
 
 import Button from "../../../ui-components/actions/Button";
 import Container from "../../../ui-components/containers/Container";
-import { MouseEventHandler } from "../../shared/sharedInterfaces";
+import { WhichPlayer } from "../../shared/sharedInterfaces";
 import * as PlayerUtilities from "./PlayerUtilities";
 
 import "./PlayerDisplay.css";
@@ -11,14 +11,20 @@ export interface IPlayerDisplayProps {
   isActive: boolean;
   name?: string;
   avatarUrl: string;
-  onChoosePlayer: MouseEventHandler;
+  which: WhichPlayer;
+  onChoosePlayer: (which: WhichPlayer) => void;
 }
 
 const PlayerDisplay = (props: IPlayerDisplayProps) => {
   return (
     <Container className={`player-display ${props.isActive ? "active" : ""}`}>
       {!props.name ? (
-        <Button onClick={props.onChoosePlayer}>Choose Player 1</Button>
+        <Button
+          // tslint:disable-next-line:jsx-no-lambda
+          onClick={() => props.onChoosePlayer(props.which)}
+        >
+          Choose Player 1
+        </Button>
       ) : (
         <React.Fragment>
           <img
@@ -29,7 +35,8 @@ const PlayerDisplay = (props: IPlayerDisplayProps) => {
           <a
             className="name"
             href="#edit_player"
-            onClick={props.onChoosePlayer}
+            // tslint:disable-next-line:jsx-no-lambda
+            onClick={() => props.onChoosePlayer(props.which)}
           >
             {props.name}
           </a>

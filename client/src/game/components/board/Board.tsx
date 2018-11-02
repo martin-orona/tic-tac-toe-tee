@@ -5,6 +5,7 @@ import GameLogic from "../../GameLogic";
 import {
   ICell,
   IGameResult,
+  IGameSettings,
   IPlayer,
   WhichPlayer
 } from "../../shared/sharedInterfaces";
@@ -26,16 +27,14 @@ export interface IBoardProps {
   player2?: IPlayer;
   activePlayer: WhichPlayer;
   board: ICell[];
-  boardWidth: number;
-  boardHeight: number;
-  winningRowLength: number;
+  gameSettings: IGameSettings;
   onCellChosen: (row: number, column: number) => void;
   children?: React.ReactNode;
 }
 
 const Board = (props: IBoardProps) => {
-  const BoardLength = `${CellLength * props.boardWidth +
-    CellSpaceBetween * props.boardWidth}${CellLengthUnit}`;
+  const BoardLength = `${CellLength * props.gameSettings.boardWidth +
+    CellSpaceBetween * props.gameSettings.boardWidth}${CellLengthUnit}`;
   const BoardStyle = {
     height: BoardLength,
     padding: CellMargin,
@@ -50,9 +49,9 @@ const Board = (props: IBoardProps) => {
   return (
     <Container className="board-container">
       <div className="board" style={BoardStyle}>
-        {Array.from(Array(props.boardWidth).keys()).map(
+        {Array.from(Array(props.gameSettings.boardWidth).keys()).map(
           (row: number, rowIndex: number) => {
-            return Array.from(Array(props.boardHeight).keys()).map(
+            return Array.from(Array(props.gameSettings.boardHeight).keys()).map(
               (column: number, columnIndex: number) => {
                 const cell = GameLogic.board.getCell(props, row, column);
                 let avatarUrl = "";

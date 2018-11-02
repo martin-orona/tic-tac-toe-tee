@@ -1,17 +1,22 @@
-import Game from "./Game";
+import { IAppState } from "../App";
 import {
+  ActionType,
+  IAction,
+  IBeginEditPlayerAction,
   ICell,
+  ICellChosenAction,
+  ICompleteEditPlayerAction,
+  IEditGameSettingsCompleteAction,
   IGameResult,
-  IPlayer,
+  IGameSettings,
+  IGameStartAction,
   WhichPlayer
 } from "./shared/sharedInterfaces";
-import { Random } from "./shared/Utilities";
+import { IActionHandlerDictionary } from "./shared/Utilities";
 
 interface IBoardInfo {
   board: ICell[];
-  boardWidth: number;
-  boardHeight: number;
-  winningRowLength: number;
+  gameSettings: IGameSettings;
 }
 
 interface ICellPosition {
@@ -19,62 +24,150 @@ interface ICellPosition {
   column: number;
 }
 
+export const GameActionHandlers: IActionHandlerDictionary = {
+  sync: {
+    // ===== game control =====
+    [ActionType.StartGame]: startGame,
+    [ActionType.ResetGame]: resetGame,
+    [ActionType.GameCellChosen]: cellChosen,
+
+    // ===== app control =====
+    [ActionType.EditGameSettingsBegin]: editGameSettings_begin,
+    [ActionType.EditGameSettingsCancelled]: editGameSettings_cancelled,
+    [ActionType.EditGameSettingsComplete]: editGameSettings_complete,
+
+    [ActionType.EditPlayerBegin]: editPlayer_begin,
+    [ActionType.EditPlayerBeginComplete]: editPlayer_complete,
+    [ActionType.EditPlayerCancelled]: editPlayer_cancelled
+  }
+};
+
 // #region game actions
 
-function startGame(game: Game) {
-  game.setState({
-    activePlayer: Random.getInt_FromInclusiveRange(
-      WhichPlayer.One,
-      WhichPlayer.Two
+// #region ===== app control =====
+
+// #region ===== game settings =====
+
+function editGameSettings_begin(state: IAppState, action: IAction) {
+  return {
+    ...state,
+    isSettingsBeingEdited: true
+  };
+}
+
+function editGameSettings_cancelled(state: IAppState, action: IAction) {
+  return {
+    ...state,
+    isSettingsBeingEdited: false
+  };
+}
+
+function editGameSettings_complete(
+  state: IAppState,
+  action: IEditGameSettingsCompleteAction
+) {
+  return {
+    ...state,
+    gameSettings: { ...action.settings },
+    isSettingsBeingEdited: false
+  };
+}
+
+// #endregion ===== game settings =====
+
+// #region ===== edit player =====
+
+function editPlayer_begin(state: IAppState, action: IBeginEditPlayerAction) {
+  return { ...state, playerBeingEdited: action.which };
+}
+
+function editPlayer_complete(
+  state: IAppState,
+  action: ICompleteEditPlayerAction
+) {
+  return {
+    ...state,
+    player1: action.which === WhichPlayer.One ? action.player : state.player1,
+    player2: action.which === WhichPlayer.Two ? action.player : state.player2,
+    playerBeingEdited: WhichPlayer.None
+  };
+}
+
+function editPlayer_cancelled(state: IAppState, action: IAction) {
+  return { ...state, playerBeingEdited: WhichPlayer.None };
+}
+
+// #endregion ===== edit player =====
+
+// #region ===== game control =====
+
+function startGame(state: IAppState, action: IGameStartAction) {
+  return {
+    ...state,
+
+    activePlayer: action.firstPlayer,
+    board: createBoard(
+      state.gameSettings.boardWidth,
+      state.gameSettings.boardHeight
     ),
-    board: createBoard(game.state.boardWidth, game.state.boardHeight),
     isPlaying: true,
     winner: { isWon: false }
-  });
+  };
 }
 
-function resetGame(game: Game) {
-  game.setState({
+function resetGame(state: IAppState, action: IGameStartAction) {
+  return {
+    ...startGame(state, action),
+
     activePlayer: WhichPlayer.None,
-    board: createBoard(game.state.boardWidth, game.state.boardHeight),
     isPlaying: false,
     winner: { isWon: false }
-  });
+  };
 }
 
-function cellChosen(game: Game, row: number, column: number) {
-  if (isCellAlreadyUsed(game.state, row, column)) {
-    return;
+function cellChosen(state: IAppState, action: ICellChosenAction) {
+  if (isCellAlreadyUsed(state, action.row, action.column)) {
+    return state;
   }
 
-  let gameResult: IGameResult;
+  const newState = { ...state, board: [...state.board] };
+  const cell = getCell(newState, action.row, action.column);
 
-  game.setState(
-    prev => {
-      const board = copyBoard(prev.board);
-      (getCell(prev, row, column) as ICell).player = prev.activePlayer;
-      gameResult = isGameWon(
-        { ...prev, board } as IBoardInfo,
-        row,
-        column,
-        prev.activePlayer
-      );
-      return {
-        activePlayer: getNextPLayer(prev.activePlayer),
-        board
-      };
-    },
-    () => {
-      if (gameResult.isWon) {
-        game.setState({
-          activePlayer: gameResult.player as WhichPlayer,
-          isPlaying: false,
-          winner: gameResult
-        });
-      }
-    }
+  if (!cell) {
+    return state;
+  }
+
+  cell.player = state.activePlayer;
+
+  const gameResult = isGameWon(
+    newState as IBoardInfo,
+    action.row,
+    action.column,
+    state.activePlayer
   );
+
+  // return {
+  //   ...newState,
+  //   activePlayer: gameResult.isWon
+  //     ? newState.activePlayer
+  //     : getNextPLayer(newState.activePlayer),
+  //   isPlaying: !gameResult.isWon,
+  //   winner: gameResult.isWon ? gameResult : newState.winner
+  // };
+
+  if (gameResult.isWon) {
+    newState.isPlaying = false;
+    newState.winner = gameResult;
+  } else {
+    newState.activePlayer = getNextPLayer(state.activePlayer);
+  }
+
+  return newState;
 }
+
+// #endregion ===== game control =====
+
+// #endregion ===== app control =====
 
 // #region helpers
 
@@ -165,7 +258,7 @@ function isPartOfWinningRow(
   const after = getMatches(boardInfo, anchorCell, getNextCellPosition);
   const cells = before.concat(anchorCell, after);
 
-  if (cells.length >= boardInfo.winningRowLength) {
+  if (cells.length >= boardInfo.gameSettings.winningRowLength) {
     return { isWon: true, cells };
   } else {
     return { isWon: false };
@@ -203,17 +296,6 @@ function isPartOfWinningRow(
 
 // #region board actions
 
-function copyBoard(board: ICell[]): ICell[] {
-  // create new copy of the board state
-  // NOTE: This can become a performance problem for large boards
-  const result: ICell[] = [];
-  let i = board.length;
-  while (i--) {
-    result[i] = board[i];
-  }
-  return result;
-}
-
 function createBoard(rows: number, columns: number): ICell[] {
   const board: ICell[] = new Array(rows * columns);
 
@@ -235,11 +317,21 @@ function getCell(
   row: number,
   column: number
 ): ICell | undefined {
+  const location = getCellLocation(boardInfo, row, column);
+
+  if (location === undefined) {
+    return undefined;
+  }
+
+  return boardInfo.board[location];
+}
+
+function getCellLocation(boardInfo: IBoardInfo, row: number, column: number) {
   if (row < 0) {
     return undefined;
   }
 
-  if (row >= boardInfo.boardHeight) {
+  if (row >= boardInfo.gameSettings.boardHeight) {
     return undefined;
   }
 
@@ -247,18 +339,20 @@ function getCell(
     return undefined;
   }
 
-  if (column >= boardInfo.boardWidth) {
+  if (column >= boardInfo.gameSettings.boardWidth) {
     return undefined;
   }
 
-  const index = row * boardInfo.boardWidth + column;
+  const index = row * boardInfo.gameSettings.boardWidth + column;
   if (index > boardInfo.board.length || index < 0) {
     return undefined;
   }
-  return boardInfo.board[index];
+
+  return index;
 }
 
 const Board = { getCell };
+
 // #endregion board actions
 
 // #region player
@@ -267,45 +361,14 @@ function getNextPLayer(current: WhichPlayer): WhichPlayer {
   return current === WhichPlayer.One ? WhichPlayer.Two : WhichPlayer.One;
 }
 
-// #region player editor
-
-function editPlayer_onBegin(game: Game, which: WhichPlayer) {
-  game.setState({ playerBeingEdited: which });
-}
-
-function editPlayer_onFinished(game: Game, player: IPlayer) {
-  game.setState(prev => {
-    return {
-      player1:
-        prev.playerBeingEdited === WhichPlayer.One ? player : prev.player1,
-      player2:
-        prev.playerBeingEdited === WhichPlayer.Two ? player : prev.player2,
-      playerBeingEdited: WhichPlayer.None
-    };
-  });
-}
-
-function editPlayer_onCancelled(game: Game) {
-  game.setState({
-    playerBeingEdited: WhichPlayer.None
-  });
-}
-
-// #endregion player editor
-
 const Player = {
-  onBeginEdit: editPlayer_onBegin,
-  onEditCancelled: editPlayer_onCancelled,
-  onEditFinished: editPlayer_onFinished
+  getNextPLayer
 };
 
 // #endregion player
 
 const GameLogic = {
   board: Board,
-  cellChosen,
-  player: Player,
-  reset: resetGame,
-  start: startGame
+  player: Player
 };
 export default GameLogic;
