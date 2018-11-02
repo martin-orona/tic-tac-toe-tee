@@ -1,7 +1,10 @@
-import { IAppProps, IAppState } from "./App";
+import * as _ from "lodash";
+
+import { IAppProps } from "./App";
 import {
   ActionType,
   IAction,
+  IAppState,
   IReceivedInitialServerResponseAction
 } from "./game/shared/sharedInterfaces";
 import {
@@ -12,39 +15,45 @@ import {
 export const ServerActionHandlers: IActionHandlerDictionary = {
   async: {} as IAsyncActionHandlerDictionary,
   sync: {
-    [ActionType.InitialServerRequestBegin]: initialServerRequestBegin,
-    [ActionType.InitialServerRequestInProgress]: initialServerRequestInProgress,
-    [ActionType.InitialServerRequestComplete]: receivedInitialServerResponse
+    [ActionType.InitialServerRequestBegin]: initialServerRequest_begin,
+    [ActionType.InitialServerRequestInProgress]: initialServerRequest_InProgress,
+    [ActionType.InitialServerRequestComplete]: initialServerRequest_complete
   }
 };
 
-function receivedInitialServerResponse(
+function initialServerRequest_begin(state: IAppState, action: IAction) {
+  return _.merge({}, state, {
+    server: {
+      initialServerRequestStatus: "begun",
+      isInitialServerCallMade: true
+    }
+  });
+}
+
+function initialServerRequest_InProgress(state: IAppState, action: IAction) {
+  return _.merge({}, state, {
+    server: {
+      initialServerRequestStatus: "in progress"
+    }
+  });
+}
+
+function initialServerRequest_complete(
   state: IAppProps,
   action: IReceivedInitialServerResponseAction
 ) {
-  return {
-    ...state,
-    initialServerResponseCount: state.initialServerResponseCount + 1,
-    serverResponse: `${
-      action.serverResponse
-    } ${state.initialServerResponseCount + 1}`
-  } as IAppProps;
-}
-
-function initialServerRequestBegin(state: IAppState, action: IAction) {
-  return {
-    ...state,
-    initialServerRequestStatus: "begun",
-    isInitialServerCallMade: true
-  } as IAppState;
-}
-
-function initialServerRequestInProgress(state: IAppState, action: IAction) {
-  return { ...state, initialServerRequestStatus: "in progress" } as IAppState;
+  return _.merge({}, state, {
+    server: {
+      initialServerRequestStatus: "complete",
+      initialServerResponseCount: state.server.initialServerResponseCount + 1,
+      serverResponse: `${action.serverResponse} ${state.server
+        .initialServerResponseCount + 1}`
+    }
+  });
 }
 
 export function callServer_InitialRequest(state: IAppState) {
-  if (state.isInitialServerCallMade) {
+  if (state.server.isInitialServerCallMade) {
     return state;
   }
 

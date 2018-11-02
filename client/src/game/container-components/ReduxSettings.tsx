@@ -1,12 +1,11 @@
 import { connect } from "react-redux";
 
-import { IAppState } from "src/App";
 import Settings from "../components/Settings";
 import {
   ActionType,
+  IAppState,
   IEditGameSettingsCompleteAction,
-  IGameSettings,
-  WhichPlayer
+  IGameSettings
 } from "../shared/sharedInterfaces";
 
 const mapStateToProps = (state: IAppState) => state;
@@ -28,12 +27,9 @@ const mergeProps = (
   dispatchProps: any,
   ownProps: any
 ) => ({
-  ...stateProps,
+  ...stateProps.game,
   ...dispatchProps,
-  ...ownProps,
-  ...(ownProps.which === WhichPlayer.One
-    ? stateProps.player1
-    : stateProps.player2)
+  ...ownProps
 });
 
 const ReduxSettings = connect(

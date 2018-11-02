@@ -1,7 +1,7 @@
-import { IAppState } from "../App";
 import {
   ActionType,
   IAction,
+  IAppState,
   IBeginEditPlayerAction,
   ICell,
   ICellChosenAction,
@@ -10,13 +10,13 @@ import {
   IGameResult,
   IGameSettings,
   IGameStartAction,
+  IMatchState,
   WhichPlayer
 } from "./shared/sharedInterfaces";
-import { IActionHandlerDictionary } from "./shared/Utilities";
+import { buildState, IActionHandlerDictionary } from "./shared/Utilities";
 
-interface IBoardInfo {
+interface IBoardInfo extends IGameSettings {
   board: ICell[];
-  gameSettings: IGameSettings;
 }
 
 interface ICellPosition {
@@ -49,28 +49,23 @@ export const GameActionHandlers: IActionHandlerDictionary = {
 // #region ===== game settings =====
 
 function editGameSettings_begin(state: IAppState, action: IAction) {
-  return {
-    ...state,
-    isSettingsBeingEdited: true
-  };
+  return buildState(state, { game: { isSettingsBeingEdited: true } });
 }
 
 function editGameSettings_cancelled(state: IAppState, action: IAction) {
-  return {
-    ...state,
-    isSettingsBeingEdited: false
-  };
+  return buildState(state, { game: { isSettingsBeingEdited: false } });
 }
 
 function editGameSettings_complete(
   state: IAppState,
   action: IEditGameSettingsCompleteAction
 ) {
-  return {
-    ...state,
-    gameSettings: { ...action.settings },
-    isSettingsBeingEdited: false
-  };
+  return buildState(state, {
+    game: {
+      isSettingsBeingEdited: false,
+      settings: { gameSettings: action.settings }
+    }
+  });
 }
 
 // #endregion ===== game settings =====
@@ -78,23 +73,42 @@ function editGameSettings_complete(
 // #region ===== edit player =====
 
 function editPlayer_begin(state: IAppState, action: IBeginEditPlayerAction) {
-  return { ...state, playerBeingEdited: action.which };
+  return buildState(state, { game: { playerBeingEdited: action.which } });
 }
 
 function editPlayer_complete(
   state: IAppState,
   action: ICompleteEditPlayerAction
 ) {
-  return {
-    ...state,
-    player1: action.which === WhichPlayer.One ? action.player : state.player1,
-    player2: action.which === WhichPlayer.Two ? action.player : state.player2,
-    playerBeingEdited: WhichPlayer.None
+  const players = {
+    player1:
+      action.which === WhichPlayer.One
+        ? action.player
+        : state.game.settings.players.player1,
+    player2:
+      action.which === WhichPlayer.Two
+        ? action.player
+        : state.game.settings.players.player2
   };
+
+  return buildState(
+    state,
+    {
+      game: {
+        playerBeingEdited: WhichPlayer.None,
+        settings: { players }
+      }
+    },
+    !state.game.matchState
+      ? {}
+      : {
+          game: { matchState: { matchConfig: { players } } }
+        }
+  );
 }
 
 function editPlayer_cancelled(state: IAppState, action: IAction) {
-  return { ...state, playerBeingEdited: WhichPlayer.None };
+  return buildState(state, { game: { playerBeingEdited: WhichPlayer.None } });
 }
 
 // #endregion ===== edit player =====
@@ -102,49 +116,76 @@ function editPlayer_cancelled(state: IAppState, action: IAction) {
 // #region ===== game control =====
 
 function startGame(state: IAppState, action: IGameStartAction) {
-  return {
-    ...state,
-
-    activePlayer: action.firstPlayer,
-    board: createBoard(
-      state.gameSettings.boardWidth,
-      state.gameSettings.boardHeight
-    ),
-    isPlaying: true,
-    winner: { isWon: false }
-  };
+  return buildState(state, {
+    game: {
+      matchState: {
+        activePlayer: action.firstPlayer,
+        board: createBoard(
+          state.game.settings.gameSettings.boardWidth,
+          state.game.settings.gameSettings.boardHeight
+        ),
+        isPlaying: true,
+        matchConfig: {
+          ...state.game.settings
+        },
+        winner: { isWon: false }
+      }
+    }
+  });
 }
 
 function resetGame(state: IAppState, action: IGameStartAction) {
-  return {
-    ...startGame(state, action),
-
-    activePlayer: WhichPlayer.None,
-    isPlaying: false,
-    winner: { isWon: false }
-  };
+  return buildState(startGame(state, action), {
+    game: {
+      matchState: {
+        activePlayer: WhichPlayer.None,
+        isPlaying: false,
+        winner: { isWon: false }
+      }
+    }
+  });
 }
 
 function cellChosen(state: IAppState, action: ICellChosenAction) {
-  if (isCellAlreadyUsed(state, action.row, action.column)) {
+  if (!state.game.matchState) {
     return state;
   }
 
-  const newState = { ...state, board: [...state.board] };
-  const cell = getCell(newState, action.row, action.column);
+  let boardInfo: IBoardInfo = {
+    ...state.game.matchState.matchConfig.gameSettings,
+    board: state.game.matchState.board
+  };
+
+  if (isCellAlreadyUsed(boardInfo, action.row, action.column)) {
+    return state;
+  }
+
+  // NOTE: want deep copy
+  const newState: IAppState = JSON.parse(JSON.stringify(state));
+  const newMatchState = newState.game.matchState as IMatchState;
+  boardInfo = {
+    ...newMatchState.matchConfig.gameSettings,
+    board: newMatchState.board
+  };
+
+  const cell = getCell(boardInfo, action.row, action.column);
 
   if (!cell) {
     return state;
   }
 
-  cell.player = state.activePlayer;
+  cell.player = action.which;
 
   const gameResult = isGameWon(
-    newState as IBoardInfo,
+    boardInfo,
     action.row,
     action.column,
-    state.activePlayer
+    action.which
   );
+
+  if (gameResult.isWon) {
+    gameResult.player = action.which;
+  }
 
   // return {
   //   ...newState,
@@ -156,10 +197,10 @@ function cellChosen(state: IAppState, action: ICellChosenAction) {
   // };
 
   if (gameResult.isWon) {
-    newState.isPlaying = false;
-    newState.winner = gameResult;
+    newMatchState.isPlaying = false;
+    newMatchState.winner = gameResult;
   } else {
-    newState.activePlayer = getNextPLayer(state.activePlayer);
+    newMatchState.activePlayer = getNextPLayer(action.which);
   }
 
   return newState;
@@ -258,7 +299,7 @@ function isPartOfWinningRow(
   const after = getMatches(boardInfo, anchorCell, getNextCellPosition);
   const cells = before.concat(anchorCell, after);
 
-  if (cells.length >= boardInfo.gameSettings.winningRowLength) {
+  if (cells.length >= boardInfo.winningRowLength) {
     return { isWon: true, cells };
   } else {
     return { isWon: false };
@@ -313,10 +354,14 @@ function createBoard(rows: number, columns: number): ICell[] {
 }
 
 function getCell(
-  boardInfo: IBoardInfo,
+  boardInfo: IBoardInfo | undefined,
   row: number,
   column: number
 ): ICell | undefined {
+  if (boardInfo === undefined) {
+    return undefined;
+  }
+
   const location = getCellLocation(boardInfo, row, column);
 
   if (location === undefined) {
@@ -331,7 +376,7 @@ function getCellLocation(boardInfo: IBoardInfo, row: number, column: number) {
     return undefined;
   }
 
-  if (row >= boardInfo.gameSettings.boardHeight) {
+  if (row >= boardInfo.boardHeight) {
     return undefined;
   }
 
@@ -339,11 +384,11 @@ function getCellLocation(boardInfo: IBoardInfo, row: number, column: number) {
     return undefined;
   }
 
-  if (column >= boardInfo.gameSettings.boardWidth) {
+  if (column >= boardInfo.boardWidth) {
     return undefined;
   }
 
-  const index = row * boardInfo.gameSettings.boardWidth + column;
+  const index = row * boardInfo.boardWidth + column;
   if (index > boardInfo.board.length || index < 0) {
     return undefined;
   }

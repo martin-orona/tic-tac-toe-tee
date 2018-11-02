@@ -11,13 +11,15 @@ import Header from "./Header";
 
 import "./Settings.css";
 
-export interface ISettingsProps extends IGameState {
+type ISettingsState = IGameState;
+
+export interface ISettingsProps extends ISettingsState {
   onAccepted: (settings: IGameSettings) => void;
   onCancelled: () => void;
 }
 
-class Settings extends React.Component<ISettingsProps, IGameSettings> {
-  public state = { ...this.props.gameSettings } as IGameSettings;
+class Settings extends React.Component<ISettingsProps, ISettingsState> {
+  public state = { ...this.props } as ISettingsState;
 
   public render() {
     return (
@@ -32,13 +34,13 @@ class Settings extends React.Component<ISettingsProps, IGameSettings> {
           // tslint:disable-next-line:jsx-no-lambda
           onSubmit={event => {
             event.preventDefault();
-            this.props.onAccepted(this.state);
+            this.props.onAccepted(this.state.settings.gameSettings);
           }}
         >
           <LabeledTextbox
             id="settings-winning-row-length"
             label="Winning Row"
-            value={this.state.winningRowLength}
+            value={this.state.settings.gameSettings.winningRowLength}
             // tslint:disable-next-line:jsx-no-lambda
             onChange={event =>
               this.onIntSettingChange(event, "winningRowLength")
@@ -49,7 +51,7 @@ class Settings extends React.Component<ISettingsProps, IGameSettings> {
           <LabeledTextbox
             id="settings-board-width"
             label="Board Width"
-            value={this.state.boardWidth}
+            value={this.state.settings.gameSettings.boardWidth}
             // tslint:disable-next-line:jsx-no-lambda
             onChange={event => this.onIntSettingChange(event, "boardWidth")}
             required={true}
@@ -58,7 +60,7 @@ class Settings extends React.Component<ISettingsProps, IGameSettings> {
           <LabeledTextbox
             id="settings-board-height"
             label="Board Height"
-            value={this.state.boardHeight}
+            value={this.state.settings.gameSettings.boardHeight}
             // tslint:disable-next-line:jsx-no-lambda
             onChange={event => this.onIntSettingChange(event, "boardHeight")}
             required={true}
@@ -72,7 +74,7 @@ class Settings extends React.Component<ISettingsProps, IGameSettings> {
               onClick={(event: React.MouseEvent) => {
                 event.preventDefault();
                 this.props.onCancelled();
-                this.setState({ ...this.props.gameSettings });
+                this.setState({ ...this.props } as ISettingsState);
               }}
             >
               Cancel
@@ -96,7 +98,17 @@ class Settings extends React.Component<ISettingsProps, IGameSettings> {
 
     const newState = {};
     newState[propName] = parsed;
-    this.setState(newState);
+
+    this.setState({
+      ...this.state,
+      settings: {
+        ...this.state.settings,
+        gameSettings: {
+          ...this.state.settings.gameSettings,
+          [propName]: parsed
+        }
+      }
+    } as ISettingsState);
   }
 }
 

@@ -1,5 +1,6 @@
-import { IAppState } from "../../App";
-import { IAction } from "./sharedInterfaces";
+import * as _ from "lodash";
+
+import { IAction, IAppState } from "./sharedInterfaces";
 
 // #region math
 
@@ -68,3 +69,10 @@ export const Reducers = { register: registerReducers };
 // #endregion redux reducers
 
 // #endregion redux
+
+// #region object copying
+
+export function buildState(current: any, ...modifications: any[]) {
+  return _.merge({}, current, ...modifications);
+}
+// #endregion object copying

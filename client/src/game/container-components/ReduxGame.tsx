@@ -1,9 +1,9 @@
 import { connect } from "react-redux";
 
-import { IAppState } from "../../App";
 import Game from "../Game";
+import { IAppState } from "../shared/sharedInterfaces";
 
-const mapStateToProps = (state: IAppState) => state;
+const mapStateToProps = (state: IAppState) => state.game;
 
 const ReduxGame = connect(mapStateToProps)(Game);
 

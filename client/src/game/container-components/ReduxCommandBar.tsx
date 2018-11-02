@@ -1,19 +1,17 @@
 import { connect } from "react-redux";
 
-import { IAppState } from "src/App";
-import CommandBar from "../components/CommandBar";
+import CommandBar, { IBoardCommandBarProps } from "../components/CommandBar";
 import GameLogic from "../GameLogic";
 import {
   ActionType,
+  IAppState,
+  IGameResult,
   IGameStartAction,
   WhichPlayer
 } from "../shared/sharedInterfaces";
 import { Random } from "../shared/Utilities";
 
-const mapStateToProps = (state: IAppState) => ({
-  ...state,
-  isReadyToBegin: !state.isPlaying && !!state.player1 && !!state.player2
-});
+const mapStateToProps = (state: IAppState) => state;
 
 const mapDispatchToProps = (dispatch: any) => ({
   dispatch,
@@ -29,23 +27,35 @@ const mergeProps = (
   stateProps: IAppState,
   dispatchProps: any,
   ownProps: any
-) => ({
-  ...stateProps,
-  ...dispatchProps,
-  ...ownProps,
-  ...(ownProps.which === WhichPlayer.One
-    ? stateProps.player1
-    : stateProps.player2),
-  isActive: stateProps.isPlaying && stateProps.activePlayer === ownProps.which,
-  onPlay: () => {
-    dispatchProps.dispatch({
-      firstPlayer: stateProps.winner.isWon
-        ? GameLogic.player.getNextPLayer(stateProps.activePlayer)
-        : Random.getInt_FromInclusiveRange(WhichPlayer.One, WhichPlayer.Two),
-      type: ActionType.StartGame
-    } as IGameStartAction);
-  }
-});
+) => {
+  const isPlaying =
+    stateProps.game.matchState && stateProps.game.matchState.isPlaying;
+  const isReadyToBegin =
+    !isPlaying &&
+    !!stateProps.game.settings.players.player1 &&
+    !!stateProps.game.settings.players.player2;
+  const winner = stateProps.game.matchState
+    ? stateProps.game.matchState.winner
+    : ({ isWon: false } as IGameResult);
+
+  return {
+    isPlaying,
+    isReadyToBegin,
+    winner,
+
+    ...dispatchProps,
+    ...ownProps,
+
+    onPlay: () => {
+      dispatchProps.dispatch({
+        firstPlayer: winner.isWon
+          ? GameLogic.player.getNextPLayer(winner.player as WhichPlayer)
+          : Random.getInt_FromInclusiveRange(WhichPlayer.One, WhichPlayer.Two),
+        type: ActionType.StartGame
+      } as IGameStartAction);
+    }
+  } as IBoardCommandBarProps;
+};
 
 const ReduxCommandBar = connect(
   mapStateToProps,

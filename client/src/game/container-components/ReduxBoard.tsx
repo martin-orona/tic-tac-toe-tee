@@ -1,14 +1,13 @@
 import { connect } from "react-redux";
 
-import { IAppState } from "src/App";
 import Board from "../components/board/Board";
-import { ActionType } from "../shared/sharedInterfaces";
+import { ActionType, IAppState, WhichPlayer } from "../shared/sharedInterfaces";
 
-const mapStateToProps = (state: IAppState) => state;
+const mapStateToProps = (state: IAppState) => state.game;
 
 const mapDispatchToProps = (dispatch: any) => ({
-  onCellChosen: (row: number, column: number) => {
-    dispatch({ type: ActionType.GameCellChosen, row, column });
+  onCellChosen: (which: WhichPlayer, row: number, column: number) => {
+    dispatch({ type: ActionType.GameCellChosen, row, column, which });
   }
 });
 

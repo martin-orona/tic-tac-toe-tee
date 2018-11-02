@@ -1,15 +1,14 @@
 import { connect } from "react-redux";
 
-import { IAppState } from "src/App";
 import PlayerEditor from "../components/player/PlayerEditor";
-import { ActionType, IPlayer, WhichPlayer } from "../shared/sharedInterfaces";
+import {
+  ActionType,
+  IAppState,
+  IPlayer,
+  WhichPlayer
+} from "../shared/sharedInterfaces";
 
-const mapStateToProps = (state: IAppState) => ({
-  ...state,
-  player:
-    state.playerBeingEdited === WhichPlayer.One ? state.player1 : state.player2,
-  which: state.playerBeingEdited
-});
+const mapStateToProps = (state: IAppState) => state;
 
 const mapDispatchToProps = (dispatch: any) => ({
   onAccepted: (which: WhichPlayer, player: IPlayer) => {
@@ -25,12 +24,14 @@ const mergeProps = (
   dispatchProps: any,
   ownProps: any
 ) => ({
-  ...stateProps,
   ...dispatchProps,
   ...ownProps,
-  ...(ownProps.which === WhichPlayer.One
-    ? stateProps.player1
-    : stateProps.player2)
+
+  player:
+    stateProps.game.playerBeingEdited === WhichPlayer.One
+      ? stateProps.game.settings.players.player1
+      : stateProps.game.settings.players.player2,
+  which: stateProps.game.playerBeingEdited
 });
 
 const ReduxPlayerEditor = connect(

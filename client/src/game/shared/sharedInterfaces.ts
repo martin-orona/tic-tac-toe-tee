@@ -22,6 +22,7 @@ export interface ICompleteEditPlayerAction extends IAction {
 }
 
 export interface ICellChosenAction extends IAction {
+  which: WhichPlayer;
   row: number;
   column: number;
 }
@@ -34,26 +35,63 @@ export interface IReceivedInitialServerResponseAction extends IAction {
 
 // #region interfaces
 
+export interface IAppState {
+  game: IGameState;
+  server: IServerApiState;
+}
+
+// #region game state
+
+export interface IGameState extends IBoardState {
+  playerBeingEdited: WhichPlayer;
+  isSettingsBeingEdited: boolean;
+}
+
+export interface IBoardState {
+  matchState?: IMatchState;
+  settings: IGameConfig;
+}
+
+export interface IGameConfig {
+  players: IPlayers;
+  gameSettings: IGameSettings;
+}
+
 export interface IGameSettings {
   boardWidth: number;
   boardHeight: number;
   winningRowLength: number;
 }
 
-// TODO: separate game state from UI state
-export interface IGameState {
-  isPlaying: boolean;
-  activePlayer: WhichPlayer;
+export interface IPlayers {
   player1?: IPlayer;
   player2?: IPlayer;
-  playerBeingEdited: WhichPlayer;
-  winner: IGameResult;
-  board: ICell[];
-
-  //  ===== ISettingsProps =====
-  isSettingsBeingEdited: boolean;
-  gameSettings: IGameSettings;
 }
+
+// tslint:disable-next-line:no-empty-interface
+export interface IMatchConfig extends IGameConfig {}
+
+export interface IMatchState {
+  activePlayer: WhichPlayer;
+  board: ICell[];
+  isPlaying: boolean;
+  matchConfig: IMatchConfig;
+  winner: IGameResult;
+}
+
+// #endregion game state
+
+// #region server integration state
+
+export interface IServerApiState {
+  initialServerCallCount: number;
+  initialServerResponseCount: number;
+  isInitialServerCallMade: boolean;
+  initialServerRequestStatus: string;
+  serverResponse: string;
+}
+
+// #region server integration state
 
 export interface ICell {
   row: number;

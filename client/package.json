@@ -4,6 +4,8 @@
   "private": true,
   "proxy": "http://localhost:5000/",
   "dependencies": {
+    "@types/lodash": "^4.14.117",
+    "lodash": "^4.17.11",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
     "react-redux": "^5.1.0",
