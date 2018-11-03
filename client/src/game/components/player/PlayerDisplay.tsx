@@ -23,7 +23,7 @@ const PlayerDisplay = (props: IPlayerDisplayProps) => {
           // tslint:disable-next-line:jsx-no-lambda
           onClick={() => props.onChoosePlayer(props.which)}
         >
-          Choose Player 1
+          Choose Player
         </Button>
       ) : (
         <React.Fragment>

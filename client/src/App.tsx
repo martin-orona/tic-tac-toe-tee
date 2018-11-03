@@ -20,7 +20,7 @@ const App = (props: IAppProps) => {
   }
 
   return (
-    <div>
+    <div className="app container">
       <ReduxGame />
 
       <div>server response: {props.server.serverResponse}</div>
